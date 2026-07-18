@@ -1,0 +1,83 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #1e1b4b;
+  color: #fff;
+}
+
+.navbar a {
+  color: #e0e7ff;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.navbar a:hover {
+  color: #fff;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-left: 0 !important;
+}
+
+.navbar nav {
+  display: flex;
+  align-items: center;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #e0e7ff;
+  cursor: pointer;
+  margin-left: 1rem;
+  font: inherit;
+}
+
+.link-btn:hover {
+  color: #fff;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 24px rgba(30, 27, 75, 0.08);
+}
+
+.card h1 {
+  margin: 0 0 0.5rem;
+  color: #1e1b4b;
+}
+
+.status {
+  margin-top: 1.5rem;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.hint {
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
