@@ -117,7 +117,7 @@ Comentario
 - [x] Crear/verificar repositorio GitHub, `.gitignore`, README inicial.
 - [x] Configurar entornos locales (Node, Python, venv, BD).
 - [x] Inicializar FastAPI (estructura de carpetas) y React con Vite.
-- [ ] Primer commit con estructura básica.
+- [x] Primer commit con estructura básica.
 
 **Entregable:** Repo con `backend/` y `frontend/` ejecutables en local.
 
