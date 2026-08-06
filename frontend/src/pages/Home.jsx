@@ -1,29 +1,37 @@
-import { useEffect, useState } from 'react'
-import api from '../services/api'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function Home() {
-  const [status, setStatus] = useState('comprobando...')
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    api
-      .get('/api/health')
-      .then((res) => setStatus(res.data.status))
-      .catch(() => {
-        setError('No se pudo conectar con el backend')
-        setStatus('offline')
-      })
-  }, [])
+  const { isAuthenticated } = useAuth()
 
   return (
-    <section className="card">
-      <h1>Red social Studious Fiesta</h1>
-      <p>Proyecto grupal — React + FastAPI</p>
-      <p className="status">
-        API: <strong>{status}</strong>
-      </p>
-      {error && <p className="error">{error}</p>}
-      <p className="hint">Día 1 completado: estructura base lista para desarrollo.</p>
+    <section className="sp-container max-w-3xl py-10 md:py-16">
+      <div className="relative sp-card rotate-sp-1 !mb-0 !p-8 md:!p-10">
+        <span className="sp-pin sp-pin-yellow" aria-hidden="true" />
+        <p className="sp-meta mb-3">Red estudiantil</p>
+        <h1 className="font-display font-extrabold text-4xl md:text-6xl tracking-tight mb-4">
+          <span className="text-sp-yellow">✺</span> Studious Party
+        </h1>
+        <p className="text-lg text-sp-ink-muted max-w-xl mb-8">
+          El campus, clavado en el tablón: publica, da like y comenta con tu gente.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {isAuthenticated ? (
+            <Link to="/feed" className="sp-btn-primary no-underline hover:no-underline">
+              Ir al feed
+            </Link>
+          ) : (
+            <>
+              <Link to="/register" className="sp-btn-primary no-underline hover:no-underline">
+                Crear cuenta
+              </Link>
+              <Link to="/login" className="sp-btn-ghost no-underline hover:no-underline">
+                Iniciar sesión
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
     </section>
   )
 }

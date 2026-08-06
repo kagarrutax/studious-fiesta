@@ -1,272 +1,381 @@
-# Plan de desarrollo — studious-fiesta
+# Plan de desarrollo — Proyecto grupal práctico
 
-**Proyecto:** Red social web básica (React + FastAPI)  
-**Repositorio:** [studious-fiesta](https://github.com/)  
+**Asignatura / actividad:** Desarrollo de una Red Social Web Básica  
+**Proyecto / nombre del sitio:** Studious Party (`studious-party`)  
 **Duración:** 20 días laborables (4 semanas, lunes a viernes)  
-**Equipo:** 3–5 integrantes  
-**Estado actual:** Fase 0 — Día 1 completado (setup base). Pendiente: diseño (Día 2).
+**Equipo:** 3–5 estudiantes  
+**Estado:** Fase 3 — integración lista · Siguiente: despliegue online (Fase 4)
 
 ---
 
-## Resumen ejecutivo
+## 1. Objetivo del proyecto
 
-| Fase | Días | Enfoque principal | Hito de control |
-|------|------|-------------------|-----------------|
-| 0 | 1–2 | Planificación y setup | Repo + arquitectura documentada |
-| 1 | 3–7 | Backend FastAPI | API funcional en Swagger |
-| 2 | 8–13 | Frontend React | Flujo UI completo en local |
-| 3 | 14–15 | Integración y QA | Build de producción listo |
-| 4 | 16–18 | Despliegue | App accesible en línea |
-| 5 | 19–20 | Documentación y entrega | Demo + README completo |
+Aplicar conocimientos de desarrollo web moderno mediante la creación de una aplicación tipo red social con **React** y **FastAPI**, integrando:
 
----
+- Frontend y backend
+- Autenticación
+- Publicación de contenido
+- Interacción entre usuarios
+- Despliegue en servidores reales
 
-## Roles sugeridos (3–5 personas)
-
-| Rol | Responsabilidades principales | Fases activas |
-|-----|------------------------------|---------------|
-| **Backend** | Modelos, endpoints, auth JWT, tests | 1, 3, 4 |
-| **Frontend** | UI, rutas, contexto auth, estilos | 2, 3, 4 |
-| **Full-stack / integración** | CORS, variables de entorno, E2E | 3, 4 |
-| **DevOps / despliegue** | Render/Railway, Vercel, CI básico | 4, 5 |
-| **Documentación / PM** | README, wireframes, tablero, presentación | 0, 5 |
-
-> Con 3 personas: Backend + Frontend + DevOps/Docs (rotando integración).  
-> Con 5 personas: un rol por área + integración dedicada.
+La aplicación será una versión **simplificada pero completamente funcional**, centrada en la interacción básica y un diseño visual moderno.
 
 ---
 
-## Convenciones de trabajo
+## 2. Requisitos oficiales (enunciado)
+
+### Tecnologías obligatorias
+
+| Obligatorio | Elección del equipo |
+|-------------|---------------------|
+| React (frontend) | Vite + React Router + axios |
+| FastAPI (backend) | SQLAlchemy + JWT |
+| Base de datos | SQLite (dev) · PostgreSQL recomendado (prod) |
+| GitHub (repo público) | Este repositorio |
+| Despliegue online | Render/Railway/Fly.io/VPS + Vercel |
+
+Otras BD permitidas: MySQL, MongoDB, SQLite, PostgreSQL.
+
+### Funcionalidades mínimas requeridas
+
+| # | Funcionalidad | Fase del plan |
+|---|---------------|---------------|
+| 1 | Login y registro | Días 3, 9 |
+| 2 | Perfil básico de usuario | Días 4, 12 |
+| 3 | Publicación de contenido | Días 4, 10 |
+| 4 | Feed principal de publicaciones | Días 4, 10 |
+| 5 | Interacción (likes **o** comentarios) | Días 5, 11 |
+| 6 | Dashboard / panel básico | Días 6, 12 |
+| 7 | Navegación funcional entre módulos | Días 8, 13 |
+| 8 | Interfaz responsive (móvil) | Días 12–13, 15 |
+
+> El enunciado exige likes **o** comentarios. Este plan implementa **ambos** para enriquecer la demo.
+
+### Tipos de red sugeridos (elegir uno en Día 1)
+
+- Facebook (posts de texto + muro)
+- TikTok (videos / publicaciones cortas)
+- Instagram (imágenes)
+- LinkedIn (perfil profesional)
+- Red estudiantil / universitaria
+- Comunidad temática (videojuegos, música, tecnología)
+
+### Arquitectura requerida
+
+```
+Cliente (React) ──REST/JSON──▶ Servidor (FastAPI) ──▶ Base de datos
+```
+
+---
+
+## 3. Entregables obligatorios
+
+### A) Repositorio GitHub público
+
+- Código organizado (`backend/`, `frontend/`, `docs/`)
+- Historial de commits del equipo
+- README.md completo (ver sección 8)
+
+### B) Aplicación desplegada
+
+Enlace funcional online. Plataformas sugeridas por el enunciado:
+
+| Backend | Frontend |
+|---------|----------|
+| VPS Ubuntu, Render, Railway, Fly.io | Vercel |
+| DigitalOcean, Oracle Cloud Free, AWS Free | Netlify / mismo VPS |
+
+### C) Presentación final
+
+Demostración funcional explicando:
+
+1. Arquitectura implementada  
+2. Flujo general del sistema  
+3. Comunicación React ↔ FastAPI  
+4. Base de datos utilizada  
+5. Proceso de despliegue  
+6. Funcionalidades implementadas  
+
+---
+
+## 4. Resumen de fases (20 días)
+
+| Fase | Días | Enfoque | Hito de control |
+|------|------|---------|-----------------|
+| **0** | 1–2 | Planificación y setup | Repo + arquitectura + tipo de red elegido |
+| **1** | 3–7 | Backend FastAPI | API completa en Swagger |
+| **2** | 8–13 | Frontend React | UI completa + responsive |
+| **3** | 14–15 | Integración y QA | Build de producción listo |
+| **4** | 16–18 | Despliegue online | URL pública funcional |
+| **5** | 19–20 | README + presentación | Entrega y demo |
+
+---
+
+## 5. Roles del equipo (3–5 personas)
+
+| Rol | Responsabilidades | Fases |
+|-----|-------------------|-------|
+| **Backend** | Modelos, endpoints, JWT, seeders | 1, 3, 4 |
+| **Frontend** | UI, rutas, auth context, responsive | 2, 3, 4 |
+| **Full-stack / integración** | CORS, env vars, flujo E2E | 3, 4 |
+| **DevOps** | Deploy backend + frontend, secretos | 4, 5 |
+| **Documentación / PM** | README, wireframes, slides, demo | 0, 5 |
+
+- **3 personas:** Backend · Frontend · DevOps/Docs (rotan integración).  
+- **5 personas:** un rol por área + integración dedicada.
+
+---
+
+## 6. Convenciones de trabajo
 
 ### Git
-- Rama principal: `main` (siempre desplegable).
-- Ramas por feature: `feature/backend-auth`, `feature/feed-ui`, etc.
-- Pull requests con revisión de al menos 1 compañero antes de merge.
-- Commits descriptivos en español o inglés (consistencia en el equipo).
+- Rama `main` siempre desplegable.
+- Features: `feature/auth`, `feature/feed`, `feature/deploy`, etc.
+- PR con revisión de ≥ 1 compañero.
+- Commits claros y frecuentes.
 
-### Comunicación diaria
-- **Stand-up:** 10 min — qué hice / qué haré / bloqueos.
-- **Tablero:** Trello, Notion o GitHub Projects con columnas *Por hacer · En progreso · Revisión · Hecho*.
+### Comunicación
+- Stand-up diario 10 min (qué hice / qué haré / bloqueos).
+- Tablero: GitHub Projects / Trello / Notion  
+  Columnas: *Por hacer · En progreso · Revisión · Hecho*.
 
-### Definición de “hecho” (DoD) por tarea
-- [ ] Código en rama con PR revisado
-- [ ] Probado manualmente (Swagger o navegador)
-- [ ] Sin secretos hardcodeados
-- [ ] Documentado en README o comentario si aplica
-
----
-
-## Stack tecnológico acordado
-
-| Capa | Tecnología | Notas |
-|------|------------|-------|
-| Frontend | React + Vite | React Router, axios/fetch |
-| Backend | FastAPI | SQLAlchemy o TortoiseORM |
-| Base de datos | SQLite (dev) / PostgreSQL (prod) | Migraciones con Alembic recomendado |
-| Auth | JWT | Access token en header `Authorization: Bearer` |
-| Estilos | Tailwind / CSS Modules | A definir día 1 |
-| Despliegue | Render/Railway (API) + Vercel/Netlify (UI) | A confirmar día 16 |
+### Definición de “hecho”
+- [ ] Código en PR revisado
+- [ ] Probado (Swagger o navegador)
+- [ ] Sin secretos en el código
+- [ ] Alineado con funcionalidades mínimas del enunciado
 
 ---
 
-## Modelo de datos (borrador — validar día 2)
+## 7. Stack y modelo (propuesta)
+
+### Stack
+
+| Capa | Tecnología |
+|------|------------|
+| Frontend | React 19 + Vite + React Router + axios |
+| Backend | FastAPI + SQLAlchemy + Pydantic |
+| Auth | JWT (`Authorization: Bearer`) |
+| BD | SQLite (local) / PostgreSQL (producción) |
+| Estilos | CSS Modules o Tailwind (definir Día 2) |
+| Deploy | Render/Railway (API) + Vercel (UI) |
+
+### Modelo de datos (borrador — validar Día 2)
 
 ```
 Usuario
-  ├── id, username, email, password_hash
-  ├── avatar_url, bio, created_at
-  └── publicaciones[], likes[], comentarios[]
+  id, username, email, password_hash
+  avatar_url, bio, created_at
 
 Publicacion
-  ├── id, contenido, imagen_url (opcional)
-  ├── usuario_id, created_at
-  └── likes[], comentarios[]
+  id, contenido, imagen_url?, usuario_id, created_at
 
 Like
-  ├── id, usuario_id, publicacion_id
-  └── UNIQUE(usuario_id, publicacion_id)
+  id, usuario_id, publicacion_id
+  UNIQUE(usuario_id, publicacion_id)
 
 Comentario
-  ├── id, contenido, usuario_id, publicacion_id
-  └── created_at
+  id, contenido, usuario_id, publicacion_id, created_at
 ```
 
-### Endpoints mínimos del API
+### Endpoints mínimos
 
-| Método | Ruta | Auth | Descripción |
-|--------|------|------|-------------|
-| POST | `/auth/register` | No | Registro |
-| POST | `/auth/login` | No | Login → JWT |
-| GET | `/posts` | Sí | Feed |
-| POST | `/posts` | Sí | Crear publicación |
-| GET | `/users/{id}` | Opcional | Perfil público |
-| POST | `/posts/{id}/like` | Sí | Toggle like |
-| GET | `/posts/{id}/comments` | Sí | Listar comentarios |
-| POST | `/posts/{id}/comments` | Sí | Crear comentario |
-| GET | `/stats` | Sí | Dashboard (totales) |
+| Método | Ruta | Auth | Función mínima cubierta |
+|--------|------|------|-------------------------|
+| POST | `/api/auth/register` | No | Registro |
+| POST | `/api/auth/login` | No | Login |
+| GET | `/api/users/{id}` | Opcional | Perfil |
+| GET | `/api/posts` | Sí | Feed |
+| POST | `/api/posts` | Sí | Publicar |
+| POST | `/api/posts/{id}/like` | Sí | Likes |
+| GET/POST | `/api/posts/{id}/comments` | Sí | Comentarios |
+| GET | `/api/stats` | Sí | Dashboard |
 
 ---
 
-## Plan detallado por día
+## 8. README obligatorio (checklist del enunciado)
 
-### Fase 0: Arranque y planificación (Días 1–2)
+El `README.md` final **debe** incluir:
 
-#### Día 1 — Definición y setup inicial
-- [ ] Reunión de equipo: tipo de red social (ej. estilo Instagram).
-- [ ] Asignar roles tentativos.
-- [x] Crear/verificar repositorio GitHub, `.gitignore`, README inicial.
-- [x] Configurar entornos locales (Node, Python, venv, BD).
-- [x] Inicializar FastAPI (estructura de carpetas) y React con Vite.
-- [x] Primer commit con estructura básica.
+- [ ] Nombre de la red social  
+- [ ] Objetivo del proyecto  
+- [ ] Tecnologías utilizadas  
+- [ ] Explicación de la arquitectura  
+- [ ] Módulos y funcionalidades  
+- [ ] Modelo de base de datos  
+- [ ] Capturas de pantalla  
+- [ ] Guía de instalación y ejecución  
+- [ ] Dependencias utilizadas  
+- [ ] Explicación del despliegue  
+- [ ] Integrantes del grupo  
+- [ ] Conclusiones técnicas  
 
-**Entregable:** Repo con `backend/` y `frontend/` ejecutables en local.
+---
+
+## 9. Plan día a día
+
+### Fase 0 — Arranque y planificación (Días 1–2)
+
+#### Día 1 — Definición y setup
+- [ ] Reunión: elegir tipo de red (Facebook / Instagram / LinkedIn / estudiantil / temática…).
+- [ ] Asignar roles (backend, frontend, DevOps, docs).
+- [x] Repositorio GitHub, `.gitignore`, README inicial.
+- [x] Entornos locales (Node, Python, venv).
+- [x] Inicializar FastAPI + React (Vite).
+- [x] Estructura base (`backend/`, `frontend/`, `docs/`).
+
+**Entregable:** repo ejecutable en local · **estado: hecho**.
 
 #### Día 2 — Diseño de la solución
-- [ ] Diseñar modelo de BD (usuarios, publicaciones, likes, comentarios).
-- [ ] Wireframes: feed, login, perfil, panel, crear publicación.
-- [ ] Listar endpoints REST definitivos.
-- [ ] Definir esquema JWT (expiración, payload).
-- [ ] Crear tablero de tareas con tareas diarias.
-- [ ] Commit con diagrama de arquitectura y decisiones en `docs/`.
+- [x] Confirmar nombre definitivo de la red social → **Studious Party**.
+- [x] Modelo de BD (usuarios, publicaciones, likes, comentarios).
+- [x] Wireframes: login, registro, feed, perfil, dashboard, crear publicación.
+- [x] Lista definitiva de endpoints REST.
+- [x] Esquema JWT (payload, expiración).
+- [ ] Tablero de tareas con backlog de 20 días.
+- [x] Documentar decisiones en `docs/arquitectura.md`.
 
-**Entregable:** `docs/arquitectura.md` + wireframes + tablero activo.
+**Entregable:** arquitectura + wireframes documentados · **estado: hecho** (falta tablero externo del equipo).
 
 ---
 
-### Fase 1: Backend — Lado del servidor (Días 3–7)
+### Fase 1 — Backend FastAPI (Días 3–7)
 
 #### Día 3 — Modelos y autenticación
-- [ ] Configurar BD y conexión desde FastAPI.
-- [ ] Modelo `Usuario` (id, username, email, password hash, foto, bio).
-- [ ] Endpoints: `POST /register`, `POST /login` (devuelve JWT).
-- [ ] Probar con Swagger UI (`/docs`).
+- [x] Conectar BD (SQLite/PostgreSQL) con SQLAlchemy.
+- [x] Modelo `Usuario` (+ Post, Like, Comment preparados).
+- [x] `POST /api/auth/register` y `POST /api/auth/login` → JWT.
+- [x] `GET /api/auth/me` protegido.
+- [x] Probar en Swagger (`/docs`) / pytest.
 
 #### Día 4 — Publicaciones y perfil
-- [ ] Modelo `Publicacion` (contenido, imagen opcional, fecha, usuario_id).
-- [ ] Endpoints: `GET /posts`, `POST /posts`, `GET /users/{id}`.
-- [ ] Proteger rutas con dependencia de usuario autenticado.
-- [ ] Subida de imágenes básica (local o cloud).
+- [x] Modelo `Publicacion`.
+- [x] `GET/POST /api/posts`, `GET /api/users/{id}`.
+- [x] Rutas protegidas con dependencia JWT.
+- [x] Subida básica de imágenes (`POST /api/posts/upload` + estáticos `/uploads`).
 
-#### Día 5 — Interacciones: likes y comentarios
-- [ ] Modelos `Like` y `Comentario`.
-- [ ] Endpoints: toggle like, listar y crear comentarios.
-- [ ] Incluir conteo de likes/comentarios en respuestas de posts.
-- [ ] Tests unitarios básicos con pytest (recomendado).
+#### Día 5 — Interacciones
+- [x] Modelos `Like` y `Comentario`.
+- [x] Toggle like + listar/crear comentarios.
+- [x] Contadores en respuesta de posts.
+- [x] Tests pytest (recomendado).
 
-#### Día 6 — Panel y ajustes
-- [ ] Endpoint de estadísticas para dashboard.
-- [ ] Endpoints extra según tipo de red (seguir usuarios, etc.).
-- [ ] Validaciones y manejo de errores centralizado.
-- [ ] Refactorización del backend.
+#### Día 6 — Dashboard y robustez
+- [x] `GET /api/stats` (totales para panel).
+- [ ] Extras opcionales según tipo de red (seguir usuarios, tags…).
+- [x] Validaciones Pydantic en schemas.
+- [ ] Refactor del backend.
 
-#### Día 7 — Integración y pruebas del backend
-- [ ] Flujo completo con Swagger y Postman/Insomnia.
-- [ ] Seeders con datos de prueba.
-- [ ] Documentación API en README.
-- [ ] **Hito:** merge rama `backend` → `main`.
+#### Día 7 — Cierre backend
+- [x] Flujo completo en Swagger / Postman.
+- [x] Seeders con datos de demo (`python -m app.seed`).
+- [x] Resumen de API en README.
+- [ ] **Hito:** merge `feature/backend` → `main`.
 
 ---
 
-### Fase 2: Frontend — Interfaz de usuario (Días 8–13)
+### Fase 2 — Frontend React (Días 8–13)
 
-#### Día 8 — Configuración React, rutas y layout
-- [ ] Estructura: `components/`, `pages/`, `services/`, `context/`.
-- [ ] React Router: rutas públicas y protegidas.
-- [ ] Layout con navbar responsive.
-- [ ] Contexto de autenticación + almacenamiento del token.
+#### Día 8 — Rutas, layout y auth context
+- [x] Estructura `pages/`, `components/`, `services/`, `context/`.
+- [x] React Router: públicas (login, register) y protegidas (feed, perfil, dashboard).
+- [x] Layout + navbar responsive.
+- [x] Contexto de autenticación + token en `localStorage`.
 
-#### Día 9 — Autenticación y registro
-- [ ] Páginas Login y Registro con validación.
-- [ ] Llamadas al backend (axios/fetch), token en localStorage.
-- [ ] Redirección según estado de autenticación.
+#### Día 9 — Login y registro
+- [x] Formularios con validación.
+- [x] Integración con API (axios).
+- [x] Redirección según sesión.
 
 #### Día 10 — Feed y publicaciones
-- [ ] Página Feed con tarjetas de publicaciones.
-- [ ] Formulario crear publicación (texto/imagen).
-- [ ] Estados de carga y error.
+- [x] Listado de posts en tarjetas.
+- [x] Formulario crear publicación (texto / imagen URL).
+- [x] Estados de carga y error.
 
 #### Día 11 — Likes y comentarios
-- [ ] Botón like con toggle y conteo.
-- [ ] Listado y formulario de comentarios.
-- [ ] Actualización optimista o refetch.
+- [x] Botón like + conteo.
+- [x] Listado y alta de comentarios.
+- [x] Actualización local tras interacción.
 
-#### Día 12 — Perfil y panel
-- [ ] Perfil propio y de otros usuarios.
-- [ ] Dashboard con datos agregados.
-- [ ] Estilizado general + responsive (móvil).
+#### Día 12 — Perfil, dashboard y responsive
+- [x] Perfil propio y de otros usuarios.
+- [x] Dashboard con estadísticas.
+- [x] Estilos + media queries / diseño móvil.
 
-#### Día 13 — Navegación y pulido visual
-- [ ] Flujo completo: login → feed → crear → perfil → logout.
-- [ ] Consistencia visual (colores, tipografía).
-- [ ] Rutas protegidas en frontend.
-- [ ] **Hito:** merge rama `frontend` → `main`.
+#### Día 13 — Navegación y pulido
+- [x] Flujo: login → feed → publicar → like/comentar → perfil → dashboard → logout.
+- [x] Consistencia visual básica.
+- [x] Protección de rutas.
+- [ ] **Hito:** merge `feature/frontend` → `main`.
 
 ---
 
-### Fase 3: Integración completa y pruebas (Días 14–15)
+### Fase 3 — Integración y pruebas (Días 14–15)
 
-#### Día 14 — Integración y pruebas E2E
-- [ ] Conectar servicios reales; variables de entorno (`VITE_API_URL`).
-- [ ] Flujo completo: registro → login → post → like → comentario → perfil → dashboard.
+#### Día 14 — Integración E2E
+- [x] `VITE_API_URL` apuntando al backend real.
+- [x] Flujo completo usuario real (local).
 - [ ] Sesión de debugging en equipo.
-- [ ] Ajuste CORS en backend.
+- [x] CORS configurado (`CORS_ORIGINS`).
 
-#### Día 15 — Pruebas finales y preparación para despliegue
-- [ ] Pruebas multi-navegador y responsive.
-- [ ] Manejo de errores (token expirado, campos vacíos).
-- [ ] `npm run build` de React.
-- [ ] Backend listo para prod (`requirements.txt`, env vars).
-- [ ] **Hito:** tag `v0.1.0-rc` en `main`.
-
----
-
-### Fase 4: Despliegue en servidor online (Días 16–18)
-
-#### Día 16 — Despliegue del backend
-- [ ] Elegir plataforma (Render, Railway, Fly.io, VPS).
-- [ ] Configurar `SECRET_KEY`, `DATABASE_URL`, dependencias.
-- [ ] Migrar BD en producción.
-- [ ] Verificar API operativa; documentar URL base.
-
-#### Día 17 — Despliegue del frontend
-- [ ] Desplegar en Vercel/Netlify.
-- [ ] Variable de entorno apuntando al backend en prod.
-- [ ] Probar aplicación completa en línea.
-
-#### Día 18 — Ajustes post-despliegue y seguridad
-- [ ] Revisar que no haya secretos en el código.
-- [ ] CORS, redirección SPA (404 → index.html).
-- [ ] Performance básica y carga de imágenes.
-- [ ] Documentar pasos de despliegue en README.
+#### Día 15 — QA y preparación a producción
+- [ ] Pruebas multi-navegador y móvil.
+- [x] Errores básicos: token inválido, campos vacíos.
+- [x] `npm run build`.
+- [x] Backend prod-ready (`requirements.txt`, `.env.example`, guía deploy).
+- [ ] **Hito:** tag `v0.1.0-rc`.
 
 ---
 
-### Fase 5: Documentación, presentación y entrega (Días 19–20)
+### Fase 4 — Despliegue online (Días 16–18)
 
-#### Día 19 — Documentación y presentación
-- [ ] README completo (objetivo, stack, arquitectura, BD, capturas, instalación, despliegue, integrantes).
-- [ ] Capturas de pantalla de la app.
-- [ ] Slides: flujo, arquitectura, demo en vivo.
-- [ ] Ensayo de demo (5–7 minutos).
+#### Día 16 — Backend en producción
+- [ ] Elegir plataforma (Render, Railway, Fly.io, VPS Ubuntu…).
+- [ ] Variables: `SECRET_KEY`, `DATABASE_URL`, `CORS_ORIGINS`.
+- [ ] Migrar / crear BD en prod.
+- [ ] Verificar API + documentar URL base.
 
-#### Día 20 — Entrega final
-- [ ] Versión final en repositorio; enlace de despliegue funcional.
-- [ ] Presentación ante instructor/compañeros.
-- [ ] Entregar URL del repo y de la app desplegada.
+#### Día 17 — Frontend en producción
+- [ ] Desplegar en Vercel (recomendado) u otra.
+- [ ] Env con URL del backend desplegado.
+- [ ] Probar flujo completo en internet.
+
+#### Día 18 — Ajustes post-despliegue
+- [ ] Sin secretos en el repo.
+- [ ] CORS + fallback SPA (404 → `index.html`).
+- [ ] Carga de imágenes y performance básica.
+- [ ] Documentar despliegue en README.
+
+**Entregable:** enlace funcional de la app (obligatorio).
+
+---
+
+### Fase 5 — Documentación, presentación y entrega (Días 19–20)
+
+#### Día 19 — README y ensayo
+- [ ] Completar los 12 puntos del README obligatorio (sección 8).
+- [ ] Insertar capturas de pantalla.
+- [ ] Preparar slides de presentación.
+- [ ] Ensayo de demo (5–10 min).
+
+#### Día 20 — Entrega y presentación
+- [ ] Repo actualizado + URL de despliegue verificada.
+- [ ] Presentación: arquitectura, flujo, React↔FastAPI, BD, deploy, funcionalidades.
+- [ ] Entregar enlace del repositorio y de la app.
 - [ ] Retrospectiva breve del equipo.
 
 ---
 
-## Estructura de carpetas objetivo
+## 10. Estructura de carpetas objetivo
 
 ```
 studious-fiesta/
 ├── backend/
 │   ├── app/
-│   │   ├── api/          # routers
-│   │   ├── core/         # config, security
-│   │   ├── models/       # SQLAlchemy models
-│   │   ├── schemas/      # Pydantic schemas
+│   │   ├── api/          # routers REST
+│   │   ├── core/         # config, security JWT
+│   │   ├── models/       # SQLAlchemy
+│   │   ├── schemas/      # Pydantic
 │   │   └── main.py
 │   ├── tests/
 │   ├── requirements.txt
@@ -284,46 +393,63 @@ studious-fiesta/
 │   ├── arquitectura.md
 │   └── wireframes/
 ├── PLAN_DESARROLLO.md
-└── README.md
+└── README.md             # documentación técnica obligatoria
 ```
 
 ---
 
-## Matriz de paralelización (referencia)
+## 11. Matriz de trabajo en paralelo
 
-| Días | Backend | Frontend | DevOps/Docs |
-|------|---------|----------|-------------|
-| 1–2 | Setup + diseño BD | Setup + wireframes | Repo, tablero, README |
-| 3–7 | API completa | Mockups / componentes base | — |
-| 8–13 | Soporte API, fixes | UI completa | — |
-| 14–15 | CORS, bugs | Integración, bugs | E2E, env vars |
-| 16–18 | Deploy API | Deploy UI | CI, secrets |
-| 19–20 | — | — | README, slides, demo |
+| Días | Backend | Frontend | DevOps / Docs |
+|------|---------|----------|---------------|
+| 1–2 | Diseño BD | Wireframes | Repo, tablero, nombre de la red |
+| 3–7 | API completa | Componentes base / mockups | Borrador README |
+| 8–13 | Fixes API | UI completa | Capturas parciales |
+| 14–15 | CORS, bugs | Integración E2E | Checklist QA |
+| 16–18 | Deploy API | Deploy UI | Secretos, docs deploy |
+| 19–20 | Soporte demo | Soporte demo | README final + slides |
 
 ---
 
-## Riesgos y mitigaciones
+## 12. Riesgos y mitigaciones
 
 | Riesgo | Mitigación |
 |--------|------------|
-| Retraso en backend bloquea frontend | Mock API con JSON Server días 8–9 |
-| Conflictos de merge | Ramas cortas, PR diarios |
-| Subida de imágenes compleja | Empezar con URLs; archivos locales en iteración 2 |
-| Token expirado en demo | Refresh manual o mensaje claro de re-login |
-| Despliegue fallido día 16 | Probar deploy en día 14 en entorno staging |
+| Backend tarde → frontend bloqueado | Mock API días 8–9 |
+| Solo likes **o** comentarios a medias | Priorizar uno bien; el otro como extra |
+| Deploy falla el último día | Probar staging en Día 14–15 |
+| README incompleto | Usar checklist de la sección 8 desde Día 7 |
+| Demo se cae por token / CORS | Cuenta de demo + checklist pre-presentación |
 
 ---
 
-## Checklist de entrega final
+## 13. Checklist de entrega final (según enunciado)
 
-- [ ] Repositorio público con historial de commits grupal
-- [ ] README con instalación, arquitectura y capturas
-- [ ] Backend desplegado y documentado (`/docs` accesible)
-- [ ] Frontend desplegado con URL pública
-- [ ] Flujo demo: registro → login → post → like → comentario → perfil
-- [ ] Presentación 5–7 min con demo en vivo
-- [ ] Retrospectiva documentada (opcional en README)
+### Funcionalidades
+- [ ] Login y registro  
+- [ ] Perfil básico  
+- [ ] Publicar contenido  
+- [ ] Feed principal  
+- [ ] Likes y/o comentarios  
+- [ ] Dashboard  
+- [ ] Navegación entre módulos  
+- [ ] Responsive móvil  
+
+### Entregables
+- [ ] Repo GitHub público organizado  
+- [ ] README con los 12 apartados obligatorios  
+- [ ] App desplegada con URL funcional  
+- [ ] Presentación (arquitectura, flujo, React↔API, BD, deploy, features)  
+
+### Demo sugerida (orden)
+1. Registro / login  
+2. Crear publicación  
+3. Like + comentario  
+4. Ver perfil  
+5. Abrir dashboard  
+6. Mostrar responsive (móvil)  
+7. Mostrar Swagger / arquitectura  
 
 ---
 
-*Última actualización: julio 2026 — Fase 0 pendiente de inicio.*
+*Plan alineado al enunciado «Proyecto grupal práctico — Red Social Web Básica». Última actualización: agosto 2026.*

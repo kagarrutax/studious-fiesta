@@ -1,32 +1,11 @@
-import { Link, Outlet } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { Outlet } from 'react-router-dom'
+import Navbar from './Navbar'
 
 export default function Layout() {
-  const { isAuthenticated, logout } = useAuth()
-
   return (
-    <div className="app">
-      <header className="navbar">
-        <Link to="/" className="brand">
-          Studious Fiesta
-        </Link>
-        <nav>
-          {isAuthenticated ? (
-            <>
-              <Link to="/feed">Feed</Link>
-              <button type="button" className="link-btn" onClick={logout}>
-                Salir
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">Iniciar sesión</Link>
-              <Link to="/register">Registrarse</Link>
-            </>
-          )}
-        </nav>
-      </header>
-      <main className="main">
+    <div className="min-h-dvh flex flex-col">
+      <Navbar />
+      <main className="flex-1 w-full py-6">
         <Outlet />
       </main>
     </div>
