@@ -1,6 +1,7 @@
 export function apiErrorMessage(err, fallback = 'Ocurrió un error') {
   if (!err.response) {
-    return 'No hay conexión con el API. Comprueba que el backend esté en http://127.0.0.1:8002'
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8002'
+    return `No hay conexión con el API (${apiUrl}). Si usas la app local, arranca el backend; si usas Vercel, espera a que despierte Render.`
   }
   const detail = err.response.data?.detail
   if (typeof detail === 'string') return detail
