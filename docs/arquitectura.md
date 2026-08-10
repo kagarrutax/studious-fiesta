@@ -27,9 +27,9 @@
 | Módulo | Contenido |
 |--------|-----------|
 | `app/core` | Configuración, seguridad JWT, hashing |
-| `app/models` | Modelos SQLAlchemy |
+| `app/models` | Modelos SQLAlchemy (User, Post, Like, Comment, Follow) |
 | `app/schemas` | Esquemas Pydantic (request/response) |
-| `app/api` | Routers: auth, users, posts, stats |
+| `app/api` | Routers: auth, users, posts, stats, follows |
 | `app/db` | Engine, Session, Base |
 
 ## Módulos frontend
@@ -70,11 +70,18 @@
        │               ┌──────▼─────┐ ┌───▼──────────┐
        │               │    Like    │ │   Comment    │
        │               │────────────│ │──────────────│
-       └──────────────▶│ user_id FK │ │ user_id FK   │
-                       │ post_id FK │ │ post_id FK   │
-                       │ UNIQUE(u,p)│ │ content      │
-                       └────────────┘ │ created_at   │
-                                      └──────────────┘
+       ├──────────────▶│ user_id FK │ │ user_id FK   │
+       │               │ post_id FK │ │ post_id FK   │
+       │               │ UNIQUE(u,p)│ │ content      │
+       │               └────────────┘ │ created_at   │
+       │                              └──────────────┘
+       │               ┌──────────────┐
+       │               │    Follow    │
+       │               │──────────────│
+       └──────────────▶│ user_id FK   │ (follower)
+                       │ followed_idFK│ (following)
+                       │ UNIQUE(u,f)  │
+                       └──────────────┘
 ```
 
 ## Endpoints definitivos
@@ -86,7 +93,10 @@
 | POST | `/api/auth/register` | No | Registro |
 | POST | `/api/auth/login` | No | Login → JWT |
 | GET | `/api/auth/me` | Sí | Usuario actual |
-| GET | `/api/users/{id}` | Opcional | Perfil público |
+| GET | `/api/users/{id}` | Opcional | Perfil público (con counts de follow) |
+| POST | `/api/users/{id}/follow` | Sí | Seguir a un usuario |
+| DELETE | `/api/users/{id}/follow` | Sí | Dejar de seguir a un usuario |
+| GET | `/api/users/{id}/followers`| Opcional | Listar seguidores |
 | GET | `/api/posts` | Sí | Feed |
 | POST | `/api/posts` | Sí | Crear publicación |
 | GET | `/api/posts/{id}` | Sí | Detalle de post |
