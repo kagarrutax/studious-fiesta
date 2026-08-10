@@ -10,6 +10,9 @@ Red social web básica — **proyecto grupal práctico** con React y FastAPI.
 
 - [Plan de desarrollo (20 días)](./PLAN_DESARROLLO.md)
 - [Plan de implementación — sistema de diseño (Tailwind)](./PLAN_IMPLEMENTACION_DISENO.md)
+- [Plan sprint 23 h (equipo)](./docs/PLAN_IMPLEMENTACION_23H.md)
+- [Guía PDF sprint 23 h](./docs/Guia_Sprint_23H_Studious_Party.pdf)
+- [Reparto de features](./docs/equipo-features.md)
 - [Arquitectura](./docs/arquitectura.md)
 - [Guía de despliegue](./docs/despliegue.md)
 
