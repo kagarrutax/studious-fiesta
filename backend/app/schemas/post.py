@@ -39,6 +39,9 @@ class UserProfile(BaseModel):
     bio: str | None = None
     created_at: datetime
     posts_count: int = 0
+    followers_count: int = 0
+    following_count: int = 0
+    is_following: bool = False
 
 
 class UserProfileUpdate(BaseModel):

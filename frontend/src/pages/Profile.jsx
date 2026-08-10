@@ -39,6 +39,10 @@ export default function Profile() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
   const [formOk, setFormOk] = useState('')
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [followersCount, setFollowersCount] = useState(0)
+  const [followingCount, setFollowingCount] = useState(0)
+  const [followBusy, setFollowBusy] = useState(false)
 
   const isOwnProfile = Boolean(me && String(me.id) === String(userId))
 
@@ -52,6 +56,9 @@ export default function Profile() {
         if (cancelled) return
         setProfile(profileRes.data)
         setBio(profileRes.data.bio || '')
+        setIsFollowing(profileRes.data.is_following || false)
+        setFollowersCount(profileRes.data.followers_count || 0)
+        setFollowingCount(profileRes.data.following_count || 0)
         setPosts(postsRes.data.filter((post) => String(post.author_id) === String(userId)))
       })
       .catch((err) => {
@@ -70,10 +77,12 @@ export default function Profile() {
     const commentsTotal = posts.reduce((sum, post) => sum + (post.comments_count || 0), 0)
     return [
       { label: 'Publicaciones', value: profile?.posts_count ?? 0 },
+      { label: 'Seguidores', value: followersCount },
+      { label: 'Siguiendo', value: followingCount },
       { label: 'Likes recibidos', value: likesTotal },
       { label: 'Comentarios', value: commentsTotal },
     ]
-  }, [posts, profile])
+  }, [posts, profile, followersCount, followingCount])
 
   function updatePost(updated) {
     setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)))
@@ -124,6 +133,26 @@ export default function Profile() {
     } finally {
       setSaving(false)
       event.target.value = ''
+    }
+  }
+
+  async function toggleFollow() {
+    setFollowBusy(true)
+    setError('')
+    try {
+      if (isFollowing) {
+        const { data } = await api.delete(`/api/users/${userId}/follow`)
+        setIsFollowing(data.following)
+        setFollowersCount(data.followers_count)
+      } else {
+        const { data } = await api.post(`/api/users/${userId}/follow`)
+        setIsFollowing(data.following)
+        setFollowersCount(data.followers_count)
+      }
+    } catch (err) {
+      setError(apiErrorMessage(err, 'No se pudo cambiar estado de seguimiento'))
+    } finally {
+      setFollowBusy(false)
     }
   }
 
@@ -201,7 +230,7 @@ export default function Profile() {
             </p>
           </div>
 
-          {isOwnProfile && !editing && (
+          {isOwnProfile && !editing ? (
             <button
               type="button"
               className="sp-btn-ghost shrink-0"
@@ -213,7 +242,16 @@ export default function Profile() {
             >
               Editar bio
             </button>
-          )}
+          ) : !isOwnProfile && me ? (
+            <button
+              type="button"
+              className={`shrink-0 ${isFollowing ? 'sp-btn-ghost' : 'sp-btn-primary'}`}
+              onClick={toggleFollow}
+              disabled={followBusy}
+            >
+              {isFollowing ? 'Siguiendo' : 'Seguir'}
+            </button>
+          ) : null}
         </div>
 
         {editing ? (
