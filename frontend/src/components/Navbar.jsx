@@ -72,6 +72,13 @@ export default function Navbar() {
               >
                 Panel
               </NavLink>
+              <NavLink
+                to="/search"
+                className={({ isActive }) => linkClass(3, isActive)}
+                onClick={() => setOpen(false)}
+              >
+                Buscar
+              </NavLink>
               {user && (
                 <NavLink
                   to={`/users/${user.id}`}
