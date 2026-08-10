@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../services/api'
+import api, { search } from '../services/api'
 import PostCard from '../components/PostCard'
 import { initials } from '../design/tokens'
 
@@ -17,7 +17,7 @@ export default function Search() {
     setLoading(true)
     setError('')
     try {
-      const { data } = await api.get('/api/search', { params: { q: query.trim() } })
+      const { data } = await search(query.trim())
       setResults(data)
     } catch (err) {
       setError(err.response?.data?.detail || 'Ocurrió un error al buscar')

@@ -15,4 +15,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+export const search = (q) => api.get('/api/search', { params: { q } })
+
 export default api

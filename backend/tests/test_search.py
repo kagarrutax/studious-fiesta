@@ -70,3 +70,10 @@ def test_search_endpoint(client) -> None:
     # 7. Estructura de respuesta
     assert "users" in data
     assert "posts" in data
+
+
+def test_search_no_auth(client) -> None:
+    res = client.get("/api/search?q=test")
+    assert res.status_code == 401
+    assert res.json()["detail"] == "No autenticado"
+
