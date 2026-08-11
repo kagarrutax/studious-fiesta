@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useToast } from '../context/ToastContext'
 import api from '../services/api'
+import { apiErrorMessage } from '../utils/errors'
+import { mediaUrl } from '../utils/media'
+import { staggerClass } from '../design/motion'
 import { PIN_COLORS, ROTATIONS, cycleClass, initials } from '../design/tokens'
 
 function formatDate(value) {
@@ -11,25 +15,31 @@ function formatDate(value) {
 }
 
 export default function PostCard({ post, index = 0, onUpdated }) {
+  const toast = useToast()
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState(null)
   const [showComments, setShowComments] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [imageBroken, setImageBroken] = useState(false)
+  const [likePop, setLikePop] = useState(false)
 
-  const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8002'
-  const imageSrc = post.image_url
-    ? post.image_url.startsWith('http')
-      ? post.image_url
-      : `${apiBase}${post.image_url}`
-    : null
+  const imageSrc = mediaUrl(post.image_url)
+  const showImage = Boolean(imageSrc) && !imageBroken
+
+  useEffect(() => {
+    setImageBroken(false)
+  }, [post.id, post.image_url])
 
   const pinClass = cycleClass(PIN_COLORS, index)
   const rotateClass = cycleClass(ROTATIONS, index)
+  const enterClass = `sp-enter ${staggerClass(index)}`
 
   async function toggleLike() {
     setBusy(true)
     setError('')
+    setLikePop(true)
+    window.setTimeout(() => setLikePop(false), 280)
     try {
       const { data } = await api.post(`/api/posts/${post.id}/like`)
       onUpdated({
@@ -37,8 +47,11 @@ export default function PostCard({ post, index = 0, onUpdated }) {
         likes_count: data.likes_count,
         liked_by_me: data.liked,
       })
+      toast.info(data.liked ? 'Like registrado' : 'Like quitado')
     } catch (err) {
-      setError(err.response?.data?.detail || 'Error al dar like')
+      const message = apiErrorMessage(err, 'Error al dar like')
+      setError(message)
+      toast.error(message)
     } finally {
       setBusy(false)
     }
@@ -69,15 +82,18 @@ export default function PostCard({ post, index = 0, onUpdated }) {
         ...post,
         comments_count: post.comments_count + 1,
       })
+      toast.success('Comentario enviado')
     } catch (err) {
-      setError(err.response?.data?.detail || 'Error al comentar')
+      const message = apiErrorMessage(err, 'Error al comentar')
+      setError(message)
+      toast.error(message)
     } finally {
       setBusy(false)
     }
   }
 
   return (
-    <article className={`sp-card ${rotateClass}`}>
+    <article className={`sp-card ${rotateClass} ${enterClass}`}>
       <span className={`sp-pin ${pinClass}`} aria-hidden="true" />
       <header className="flex items-center gap-3 mb-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sp-surface-raised text-sm font-semibold text-sp-yellow">
@@ -86,7 +102,7 @@ export default function PostCard({ post, index = 0, onUpdated }) {
         <div className="min-w-0 flex-1">
           <Link
             to={`/users/${post.author.id}`}
-            className="font-semibold text-sp-ink no-underline hover:text-sp-cyan"
+            className="font-semibold text-sp-ink no-underline hover:text-sp-cyan transition-colors duration-200"
           >
             @{post.author.username}
           </Link>
@@ -94,11 +110,12 @@ export default function PostCard({ post, index = 0, onUpdated }) {
         </div>
       </header>
       <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">{post.content}</p>
-      {imageSrc && (
+      {showImage && (
         <img
           className="mb-3 w-full max-h-80 object-cover rounded-md border border-DEFAULT"
           src={imageSrc}
           alt="Adjunto de la publicación"
+          onError={() => setImageBroken(true)}
         />
       )}
       <div className="sp-divider pt-3 mt-1 flex flex-wrap gap-3">
@@ -106,17 +123,22 @@ export default function PostCard({ post, index = 0, onUpdated }) {
           type="button"
           disabled={busy}
           onClick={toggleLike}
-          className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition
+          className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition duration-200
             ${post.liked_by_me ? 'text-sp-pink' : 'text-sp-ink-muted hover:text-sp-pink'}`}
         >
-          <span aria-hidden="true">{post.liked_by_me ? '♥' : '♡'}</span>
+          <span
+            aria-hidden="true"
+            className={likePop ? 'sp-like-pop' : 'inline-block'}
+          >
+            {post.liked_by_me ? '♥' : '♡'}
+          </span>
           <span className="font-mono text-xs">{post.likes_count}</span>
           <span className="sp-meta !normal-case tracking-normal">Me gusta</span>
         </button>
         <button
           type="button"
           onClick={loadComments}
-          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-sp-ink-muted hover:text-sp-cyan"
+          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-sp-ink-muted hover:text-sp-cyan transition duration-200"
         >
           <span className="font-mono text-xs">{post.comments_count}</span>
           <span className="sp-meta !normal-case tracking-normal">Comentarios</span>

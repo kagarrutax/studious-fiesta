@@ -1,15 +1,23 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { TAB_ACTIVE, cycleClass, initials } from '../design/tokens'
 
 export default function Navbar() {
   const { isAuthenticated, user, logout, loading } = useAuth()
+  const toast = useToast()
   const [open, setOpen] = useState(false)
+
+  function handleLogout() {
+    logout()
+    setOpen(false)
+    toast.info('Sesión cerrada')
+  }
 
   function linkClass(index, isActive) {
     const base =
-      'font-mono text-xs uppercase tracking-wide no-underline px-1 py-2 border-b-[3px] border-transparent text-sp-ink-muted hover:text-sp-ink'
+      'font-mono text-xs uppercase tracking-wide no-underline px-1 py-2 border-b-[3px] border-transparent text-sp-ink-muted hover:text-sp-ink transition-colors duration-200 ease-out'
     if (!isActive) return base
     return `${base} text-sp-ink ${cycleClass(TAB_ACTIVE, index)}`
   }
@@ -98,7 +106,7 @@ export default function Navbar() {
                   </span>
                 </div>
               )}
-              <button type="button" className="sp-btn-ghost px-3 py-2 text-xs" onClick={logout}>
+              <button type="button" className="sp-btn-ghost px-3 py-2 text-xs" onClick={handleLogout}>
                 Salir
               </button>
             </>

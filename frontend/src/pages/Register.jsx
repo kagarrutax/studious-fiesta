@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
 
 export default function Register() {
   const { isAuthenticated, login } = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     username: '',
@@ -34,9 +36,12 @@ export default function Register() {
         password: form.password,
       })
       login(data.access_token)
+      toast.success('Cuenta creada. ¡Bienvenido a Studious Party!')
       navigate('/feed')
     } catch (err) {
-      setError(apiErrorMessage(err, 'No se pudo registrar'))
+      const message = apiErrorMessage(err, 'No se pudo registrar')
+      setError(message)
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
