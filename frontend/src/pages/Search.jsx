@@ -36,6 +36,16 @@ export default function Search() {
     })
   }
 
+  function handlePostDeleted(postId) {
+    setResults((prev) => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        posts: prev.posts.filter((p) => p.id !== postId),
+      }
+    })
+  }
+
   return (
     <div className="sp-container max-w-2xl py-8">
       <header className="mb-8">
@@ -93,7 +103,7 @@ export default function Search() {
                   </h2>
                   <div className="flex flex-col gap-6">
                     {results.posts.map((post, i) => (
-                      <PostCard key={post.id} post={post} index={i} onUpdated={handlePostUpdated} />
+                      <PostCard key={post.id} post={post} index={i} onUpdated={handlePostUpdated} onDeleted={handlePostDeleted} />
                     ))}
                   </div>
                 </section>

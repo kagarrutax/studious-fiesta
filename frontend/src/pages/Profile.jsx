@@ -88,6 +88,10 @@ export default function Profile() {
     setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)))
   }
 
+  function handlePostDeleted(postId) {
+    setPosts((prev) => prev.filter((post) => post.id !== postId))
+  }
+
   async function saveProfile(event) {
     event.preventDefault()
     setSaving(true)
@@ -333,7 +337,7 @@ export default function Profile() {
         </div>
       ) : (
         posts.map((post, index) => (
-          <PostCard key={post.id} post={post} index={index} onUpdated={updatePost} />
+          <PostCard key={post.id} post={post} index={index} onUpdated={updatePost} onDeleted={handlePostDeleted} />
         ))
       )}
     </section>

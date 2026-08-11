@@ -61,6 +61,10 @@ export default function Feed() {
     setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)))
   }
 
+  function handlePostDeleted(postId) {
+    setPosts((prev) => prev.filter((post) => post.id !== postId))
+  }
+
   return (
     <section className="sp-container">
       <h1 className="font-display text-3xl mb-4">Feed</h1>
@@ -114,7 +118,7 @@ export default function Feed() {
         <p className="text-sp-ink-muted">Aún no hay publicaciones. Sé el primero.</p>
       ) : (
         posts.map((post, index) => (
-          <PostCard key={post.id} post={post} index={index} onUpdated={updatePost} />
+          <PostCard key={post.id} post={post} index={index} onUpdated={updatePost} onDeleted={handlePostDeleted} />
         ))
       )}
     </section>
