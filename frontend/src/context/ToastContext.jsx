@@ -1,0 +1,57 @@
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+
+const ToastContext = createContext(null)
+
+let toastId = 0
+
+export function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([])
+
+  const remove = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }, [])
+
+  const dismiss = useCallback(
+    (id) => {
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, exiting: true } : t)),
+      )
+      window.setTimeout(() => remove(id), 150)
+    },
+    [remove],
+  )
+
+  const push = useCallback(
+    (message, type = 'info', duration = 3200) => {
+      const id = ++toastId
+      setToasts((prev) => [...prev.slice(-4), { id, message, type, exiting: false }])
+      if (duration > 0) {
+        window.setTimeout(() => dismiss(id), duration)
+      }
+      return id
+    },
+    [dismiss],
+  )
+
+  const value = useMemo(
+    () => ({
+      toasts,
+      push,
+      dismiss,
+      success: (message, duration) => push(message, 'success', duration),
+      error: (message, duration) => push(message, 'error', duration ?? 4500),
+      info: (message, duration) => push(message, 'info', duration),
+    }),
+    [toasts, push, dismiss],
+  )
+
+  return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>
+}
+
+export function useToast() {
+  const ctx = useContext(ToastContext)
+  if (!ctx) {
+    throw new Error('useToast debe usarse dentro de ToastProvider')
+  }
+  return ctx
+}

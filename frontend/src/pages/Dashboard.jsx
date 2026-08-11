@@ -23,7 +23,7 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <section className="sp-container max-w-4xl">
+    <section className="sp-container max-w-4xl sp-page">
       <h1 className="font-display text-3xl mb-2">Panel</h1>
       <p className="text-sp-ink-muted mb-6">Actividad de Studious Party</p>
 
@@ -43,7 +43,7 @@ export default function Dashboard() {
             {STAT_LABELS.map((item, index) => (
               <article
                 key={item.key}
-                className={`relative bg-sp-surface border border-DEFAULT rounded-lg p-4 shadow-card border-t-[3px] ${cycleClass(ACCENT_TOP, index)} ${cycleClass(ROTATIONS, index)}`}
+                className={`relative bg-sp-surface border border-DEFAULT rounded-lg p-4 shadow-card border-t-[3px] sp-enter ${cycleClass(ACCENT_TOP, index)} ${cycleClass(ROTATIONS, index)} ${['sp-delay-0','sp-delay-1','sp-delay-2','sp-delay-3'][index] || 'sp-delay-0'}`}
               >
                 <p className="font-display text-3xl text-sp-ink mb-2">{stats[item.key]}</p>
                 <p className="sp-meta mb-0">{item.label}</p>
@@ -51,7 +51,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="rounded-lg border border-DEFAULT bg-sp-surface p-5 shadow-card">
+          <div className="rounded-lg border border-DEFAULT bg-sp-surface p-5 shadow-card sp-enter sp-delay-4">
             <h2 className="font-display text-xl mb-4">Actividad reciente</h2>
             {/* Supuesto: usamos los totales de /api/stats como filas de resumen. */}
             {STAT_LABELS.map((item, index) => (

@@ -4,12 +4,15 @@ Red social web básica — **proyecto grupal práctico** con React y FastAPI.
 
 **Nombre del sitio:** Studious Party (`studious-party`)  
 **Repositorio:** `studious-fiesta`  
-**URL desplegada:** _(pendiente — Fase 4)_
+**URL desplegada:** https://studious-party.vercel.app  
+**API producción:** https://studious-party-api.onrender.com  
+**Docs API:** https://studious-party-api.onrender.com/docs
 
 ## Documentación
 
 - [Plan de desarrollo (20 días)](./PLAN_DESARROLLO.md)
 - [Plan de implementación — sistema de diseño (Tailwind)](./PLAN_IMPLEMENTACION_DISENO.md)
+- [Plan mejora animaciones / estilos](./docs/PLAN_MEJORA_ANIMACIONES.md)
 - [Plan sprint 23 h (equipo)](./docs/PLAN_IMPLEMENTACION_23H.md)
 - [Guía PDF sprint 23 h](./docs/Guia_Sprint_23H_Studious_Party.pdf)
 - [Reparto de features](./docs/equipo-features.md)
@@ -33,7 +36,7 @@ Aplicar desarrollo web moderno creando una red social simplificada pero funciona
 ## Arquitectura
 
 ```
-React (Vite :5173) ──REST/JSON + JWT──▶ FastAPI (:8000) ──SQL──▶ SQLite/PostgreSQL
+React (Vite :5173) ──REST/JSON + JWT──▶ FastAPI (:8002) ──SQL──▶ SQLite / Supabase Postgres
 ```
 
 Cliente-servidor: el frontend consume endpoints REST; el backend valida JWT, persiste datos y sirve imágenes en `/uploads`.
@@ -74,7 +77,7 @@ Detalle en [`docs/arquitectura.md`](./docs/arquitectura.md).
 | GET | `/api/stats` | Sí |
 | GET | `/api/health` | No |
 
-Documentación interactiva: `http://localhost:8000/docs`
+Documentación interactiva: `http://127.0.0.1:8002/docs`
 
 ## Estado del plan
 
@@ -83,9 +86,9 @@ Documentación interactiva: `http://localhost:8000/docs`
 | 0 — Arranque | Completada |
 | 1 — Backend | Completada |
 | 2 — Frontend | Completada |
-| 3 — Integración | En curso |
-| 4 — Despliegue | Pendiente |
-| 5 — Entrega | Pendiente |
+| 3 — Integración | Completada |
+| 4 — Despliegue | Completada (Vercel + Render + Supabase) |
+| 5 — Entrega | En curso (docs + UX) |
 
 ## Funcionalidades mínimas (enunciado)
 
@@ -159,24 +162,34 @@ python -m app.seed
 
 ## Despliegue
 
+| Pieza | URL / plataforma |
+|-------|------------------|
+| Frontend | [studious-party.vercel.app](https://studious-party.vercel.app) (Vercel) |
+| Backend | [studious-party-api.onrender.com](https://studious-party-api.onrender.com) (Render) |
+| Base de datos | Supabase Postgres |
+
 Ver [`docs/despliegue.md`](./docs/despliegue.md). Archivos de apoyo:
 
-- `backend/render.yaml` (o servicio Web en Render)
+- `backend/render.yaml`
 - `frontend/vercel.json` (SPA + variable `VITE_API_URL`)
 
 ## Capturas de pantalla
 
-_(Añadir en Fase 5: home, feed, perfil, panel, Swagger.)_
+_(Añadir en Fase 5: home, feed, perfil, panel, búsqueda, Swagger.)_
 
 ## Integrantes
 
-| Nombre | Rol |
-|--------|-----|
-| _Pendiente_ | Backend / Frontend / Docs |
+| Nombre | Rol / feature |
+|--------|----------------|
+| Yokabeth Valdes | Seguir usuarios |
+| Jessica Angulo | Editar / borrar posts |
+| YadiiCabeza96 | Búsqueda |
+| meilynperea2-debug | Dashboard con actividad |
+| Adrian Arboleda | UX (toasts) + docs de entrega |
 
 ## Conclusiones técnicas
 
-_(Completar tras el despliegue y la demo.)_
+Stack React + FastAPI con JWT, despliegue separado (Vercel + Render) y Postgres en Supabase. El trabajo por ramas/PR evitó romper `main` mientras el equipo sumaba features.
 
 ## Estructura
 

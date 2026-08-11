@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
 
 export default function Login() {
   const { isAuthenticated, login } = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,9 +25,12 @@ export default function Login() {
     try {
       const { data } = await api.post('/api/auth/login', { email, password })
       login(data.access_token)
+      toast.success('Sesión iniciada. ¡Bienvenido de nuevo!')
       navigate('/feed')
     } catch (err) {
-      setError(apiErrorMessage(err, 'No se pudo iniciar sesión'))
+      const message = apiErrorMessage(err, 'No se pudo iniciar sesión')
+      setError(message)
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
