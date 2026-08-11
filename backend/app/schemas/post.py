@@ -16,6 +16,10 @@ class PostCreate(BaseModel):
     image_url: str | None = Field(default=None, max_length=500)
 
 
+class PostUpdate(BaseModel):
+    content: str | None = Field(default=None, min_length=1, max_length=2000)
+
+
 class PostOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

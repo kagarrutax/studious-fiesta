@@ -6,7 +6,7 @@ from app.api.deps import get_current_user
 from app.core.uploads import save_upload
 from app.db import get_db
 from app.models import Comment, Like, Post, User
-from app.schemas import CommentCreate, CommentOut, LikeToggleOut, PostCreate, PostOut
+from app.schemas import CommentCreate, CommentOut, LikeToggleOut, PostCreate, PostOut, PostUpdate
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
@@ -90,6 +90,39 @@ def get_post(
     current_user: User = Depends(get_current_user),
 ) -> PostOut:
     return serialize_post(get_post_or_404(db, post_id), current_user.id)
+
+
+@router.put("/{post_id}", response_model=PostOut)
+def update_post(
+    post_id: int,
+    payload: PostUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> PostOut:
+    post = get_post_or_404(db, post_id)
+    if post.author_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para editar esta publicación")
+
+    if payload.content is not None:
+        post.content = payload.content.strip()
+
+    db.commit()
+    return serialize_post(get_post_or_404(db, post_id), current_user.id)
+
+
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    post = get_post_or_404(db, post_id)
+    if post.author_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para eliminar esta publicación")
+
+    db.delete(post)
+    db.commit()
+    return None
 
 
 @router.post("/{post_id}/like", response_model=LikeToggleOut)

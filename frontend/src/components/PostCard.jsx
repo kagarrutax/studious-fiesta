@@ -6,6 +6,7 @@ import { apiErrorMessage } from '../utils/errors'
 import { mediaUrl } from '../utils/media'
 import { staggerClass } from '../design/motion'
 import { PIN_COLORS, ROTATIONS, cycleClass, initials } from '../design/tokens'
+import { useAuth } from '../context/AuthContext'
 
 function formatDate(value) {
   return new Date(value).toLocaleString('es', {
@@ -14,15 +15,18 @@ function formatDate(value) {
   })
 }
 
-export default function PostCard({ post, index = 0, onUpdated }) {
-  const toast = useToast()
+export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
+  const { user } = useAuth()
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState(null)
   const [showComments, setShowComments] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [imageBroken, setImageBroken] = useState(false)
-  const [likePop, setLikePop] = useState(false)
+  
+  const [isEditing, setIsEditing] = useState(false)
+  const [editContent, setEditContent] = useState(post.content)
+
+  const isOwner = user?.id === post.author.id
 
   const imageSrc = mediaUrl(post.image_url)
   const showImage = Boolean(imageSrc) && !imageBroken
@@ -92,25 +96,108 @@ export default function PostCard({ post, index = 0, onUpdated }) {
     }
   }
 
+  async function deletePost() {
+    if (!window.confirm('¿Seguro que deseas eliminar esta publicación?')) return
+    setBusy(true)
+    setError('')
+    try {
+      await api.delete(`/api/posts/${post.id}`)
+      if (onDeleted) onDeleted(post.id)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Error al eliminar el post')
+      setBusy(false)
+    }
+  }
+
+  async function saveEdit() {
+    if (!editContent.trim()) return
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = await api.put(`/api/posts/${post.id}`, {
+        content: editContent.trim(),
+      })
+      onUpdated(data)
+      setIsEditing(false)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Error al editar el post')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <article className={`sp-card ${rotateClass} ${enterClass}`}>
       <span className={`sp-pin ${pinClass}`} aria-hidden="true" />
-      <header className="flex items-center gap-3 mb-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sp-surface-raised text-sm font-semibold text-sp-yellow">
-          {initials(post.author?.username)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <Link
-            to={`/users/${post.author.id}`}
-            className="font-semibold text-sp-ink no-underline hover:text-sp-cyan transition-colors duration-200"
-          >
-            @{post.author.username}
-          </Link>
-          <p className="sp-meta mb-0">{formatDate(post.created_at)}</p>
+      <header className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sp-surface-raised text-sm font-semibold text-sp-yellow">
+            {initials(post.author?.username)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <Link
+              to={`/users/${post.author.id}`}
+              className="font-semibold text-sp-ink no-underline hover:text-sp-cyan"
+            >
+              @{post.author.username}
+            </Link>
+            <p className="sp-meta mb-0">{formatDate(post.created_at)}</p>
+          </div>
         </div>
+        {isOwner && !isEditing && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-xs text-sp-cyan hover:underline bg-transparent border-0 cursor-pointer"
+              disabled={busy}
+            >
+              Editar
+            </button>
+            <button
+              onClick={deletePost}
+              className="text-xs text-sp-pink hover:underline bg-transparent border-0 cursor-pointer"
+              disabled={busy}
+            >
+              Borrar
+            </button>
+          </div>
+        )}
       </header>
-      <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">{post.content}</p>
-      {showImage && (
+
+      {isEditing ? (
+        <div className="mb-3">
+          <textarea
+            className="sp-input w-full min-h-[100px] mb-2"
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            disabled={busy}
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              className="text-xs text-sp-ink-muted hover:underline bg-transparent border-0 cursor-pointer"
+              onClick={() => {
+                setIsEditing(false)
+                setEditContent(post.content)
+                setError('')
+              }}
+              disabled={busy}
+            >
+              Cancelar
+            </button>
+            <button
+              className="sp-btn-primary py-1 px-3 text-xs"
+              onClick={saveEdit}
+              disabled={busy || !editContent.trim()}
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">{post.content}</p>
+      )}
+
+      {imageSrc && !isEditing && (
         <img
           className="mb-3 w-full max-h-80 object-cover rounded-md border border-DEFAULT"
           src={imageSrc}
@@ -118,6 +205,7 @@ export default function PostCard({ post, index = 0, onUpdated }) {
           onError={() => setImageBroken(true)}
         />
       )}
+
       <div className="sp-divider pt-3 mt-1 flex flex-wrap gap-3">
         <button
           type="button"
@@ -144,7 +232,9 @@ export default function PostCard({ post, index = 0, onUpdated }) {
           <span className="sp-meta !normal-case tracking-normal">Comentarios</span>
         </button>
       </div>
-      {error && <p className="sp-error-text">{error}</p>}
+      
+      {error && <p className="sp-error-text mt-2">{error}</p>}
+      
       {showComments && (
         <div className="mt-3 space-y-2">
           {(comments || []).map((item) => (
@@ -159,6 +249,7 @@ export default function PostCard({ post, index = 0, onUpdated }) {
               onChange={(e) => setComment(e.target.value)}
               placeholder="Escribe un comentario…"
               maxLength={1000}
+              disabled={busy}
             />
             <button className="sp-btn-primary shrink-0" type="submit" disabled={busy || !comment.trim()}>
               Enviar
