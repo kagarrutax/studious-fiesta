@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ANDROID_APK_URL } from '../config/mobile'
 import { useAuth } from '../context/AuthContext'
 
 export default function Home() {
@@ -30,6 +31,13 @@ export default function Home() {
               </Link>
             </>
           )}
+          <a
+            href={ANDROID_APK_URL}
+            className="sp-btn-ghost no-underline hover:no-underline"
+            download="studious-party.apk"
+          >
+            Descargar app Android
+          </a>
         </div>
       </div>
       <p className="sp-meta mt-4 text-center sp-enter sp-delay-4">

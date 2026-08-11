@@ -13,6 +13,7 @@ Red social web básica — **proyecto grupal práctico** con React y FastAPI.
 - [Plan de desarrollo (20 días)](./PLAN_DESARROLLO.md)
 - [Plan de implementación — sistema de diseño (Tailwind)](./PLAN_IMPLEMENTACION_DISENO.md)
 - [Plan mejora animaciones / estilos](./docs/PLAN_MEJORA_ANIMACIONES.md)
+- [Plan app móvil Expo (MVP)](./docs/PLAN_APP_MOVIL.md)
 - [Plan sprint 23 h (equipo)](./docs/PLAN_IMPLEMENTACION_23H.md)
 - [Guía PDF sprint 23 h](./docs/Guia_Sprint_23H_Studious_Party.pdf)
 - [Reparto de features](./docs/equipo-features.md)
@@ -28,6 +29,7 @@ Aplicar desarrollo web moderno creando una red social simplificada pero funciona
 | Capa | Tecnología |
 |------|------------|
 | Frontend | React 19 + Vite + React Router + axios |
+| Móvil | Expo (React Native) + expo-router — carpeta `mobile/` |
 | Backend | FastAPI + SQLAlchemy + Pydantic + JWT (bcrypt) |
 | Base de datos | SQLite (desarrollo) · PostgreSQL recomendado (producción) |
 | Control de versiones | GitHub |
@@ -140,6 +142,17 @@ npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
 App: `http://127.0.0.1:5173`
+
+### App móvil (Expo)
+
+```bash
+cd mobile
+npm install
+copy .env.example .env
+npm start
+```
+
+Escanea el QR con Expo Go. Detalle: [`mobile/README.md`](./mobile/README.md) y [`docs/PLAN_APP_MOVIL.md`](./docs/PLAN_APP_MOVIL.md).
 
 ### Datos de demo
 
