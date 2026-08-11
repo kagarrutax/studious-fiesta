@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Studious Party",
+    "slug": "studious-party",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "studiousparty",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "party.studious.mobile",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Studious Party necesita acceso a tus fotos para publicar imágenes en el feed."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f1419",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "package": "party.studious.mobile",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Studious Party necesita acceso a tus fotos para publicar imágenes."
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0f1419"
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://studious-party-api.onrender.com",
+      "router": {},
+      "eas": {
+        "projectId": "97e00ed2-42b2-491c-a8fb-4aa0245bc40d"
+      }
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "owner": "kagarrutax"
+  }
+}

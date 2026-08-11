@@ -2,6 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Usamos translate/scale (no transform) para no pelear con rotate-sp-* */
+
+@keyframes sp-fade-up {
+  0% {
+    opacity: 0;
+    translate: 0 36px;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes sp-page-in {
+  0% {
+    opacity: 0;
+    translate: 0 28px;
+    scale: 0.96;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes sp-pin-pop {
+  0% {
+    opacity: 0;
+    scale: 0;
+  }
+  55% {
+    opacity: 1;
+    scale: 1.35;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes sp-like-pop {
+  0% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.45;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes sp-busy-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
 @layer base {
   body {
     @apply bg-sp-bg bg-corkboard bg-[length:24px_24px] text-sp-ink font-body antialiased;
@@ -46,13 +109,19 @@
 
   .sp-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3
-      font-semibold text-sm cursor-pointer transition
+      font-semibold text-sm cursor-pointer transition duration-200
       hover:brightness-110 active:translate-y-px
       motion-reduce:transition-none;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .sp-btn-primary {
     @apply sp-btn bg-sp-pink text-[#1B1220];
+  }
+
+  .sp-btn-primary[aria-busy='true'] {
+    @apply pointer-events-none;
+    animation: sp-busy-pulse 0.9s ease-in-out infinite;
   }
 
   .sp-btn-ghost {
@@ -65,12 +134,20 @@
 
   .sp-card {
     @apply relative bg-sp-surface border border-DEFAULT rounded-lg p-5 mb-5 shadow-card
-      transition hover:-translate-y-0.5 hover:shadow-raised hover:rotate-0
-      motion-reduce:transition-none motion-reduce:hover:translate-y-0;
+      transition duration-200
+      motion-reduce:transition-none;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sp-card:hover {
+      @apply -translate-y-1 shadow-raised;
+    }
   }
 
   .sp-pin {
-    @apply absolute -top-1.5 left-5 w-3 h-3 rounded-full shadow-[0_2px_3px_rgba(0,0,0,0.4)];
+    @apply absolute -top-1.5 left-5 w-3.5 h-3.5 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.45)];
+    animation: sp-pin-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
   }
 
   .sp-pin-pink {
@@ -88,11 +165,12 @@
   .sp-notecard {
     @apply relative w-full max-w-[380px] bg-sp-surface border border-dashed border-strong
       rounded-lg px-5 py-6 shadow-raised;
+    animation: sp-page-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .sp-input {
     @apply w-full bg-sp-surface-raised border border-DEFAULT rounded-md p-3 text-sp-ink
-      text-base transition focus:border-sp-cyan focus:outline-none;
+      text-base transition duration-200 focus:border-sp-cyan focus:outline-none;
   }
 
   .sp-input-error {
@@ -114,5 +192,51 @@
 
   .sp-divider {
     @apply border-t border-dashed border-DEFAULT;
+  }
+
+  .sp-enter {
+    animation: sp-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sp-page {
+    animation: sp-page-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sp-delay-0 {
+    animation-delay: 0ms;
+  }
+  .sp-delay-1 {
+    animation-delay: 100ms;
+  }
+  .sp-delay-2 {
+    animation-delay: 200ms;
+  }
+  .sp-delay-3 {
+    animation-delay: 300ms;
+  }
+  .sp-delay-4 {
+    animation-delay: 400ms;
+  }
+
+  .sp-empty {
+    @apply text-sp-ink-muted;
+    animation: sp-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sp-like-pop {
+    display: inline-block;
+    animation: sp-like-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-pin,
+  .sp-notecard,
+  .sp-enter,
+  .sp-page,
+  .sp-empty,
+  .sp-like-pop,
+  .sp-btn-primary[aria-busy='true'] {
+    animation: none !important;
   }
 }

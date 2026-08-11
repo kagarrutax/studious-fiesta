@@ -47,7 +47,7 @@ export default function Search() {
   }
 
   return (
-    <div className="sp-container max-w-2xl py-8">
+    <div className="sp-container max-w-2xl py-8 sp-page">
       <header className="mb-8">
         <h1 className="sp-heading">Buscar en Studious Party</h1>
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 mt-4">
@@ -71,20 +71,20 @@ export default function Search() {
       {results && !loading && (
         <div className="space-y-8">
           {results.users.length === 0 && results.posts.length === 0 ? (
-            <p className="sp-meta">No se encontraron resultados.</p>
+            <p className="sp-empty">No se encontraron resultados.</p>
           ) : (
             <>
               {results.users.length > 0 && (
-                <section>
+                <section className="sp-enter">
                   <h2 className="text-xl font-display font-bold text-sp-ink mb-4 uppercase tracking-wide">
                     Usuarios
                   </h2>
                   <div className="flex flex-wrap gap-4">
-                    {results.users.map((u) => (
+                    {results.users.map((u, i) => (
                       <Link
                         key={u.id}
                         to={`/users/${u.id}`}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-sp-surface-raised border border-dashed border-strong no-underline hover:border-sp-cyan transition"
+                        className={`flex items-center gap-3 p-3 rounded-lg bg-sp-surface-raised border border-dashed border-strong no-underline hover:border-sp-cyan transition duration-200 sp-enter ${['sp-delay-0','sp-delay-1','sp-delay-2','sp-delay-3','sp-delay-4'][Math.min(i, 4)]}`}
                       >
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sp-bg text-sm font-semibold text-sp-yellow">
                           {initials(u.username)}

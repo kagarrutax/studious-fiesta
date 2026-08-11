@@ -5,19 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import { ACCENT_TOP, cycleClass, initials } from '../design/tokens'
 import { apiErrorMessage } from '../utils/errors'
-
-function mediaUrl(path) {
-  if (!path || typeof path !== 'string') return null
-  const trimmed = path.trim()
-  if (!trimmed) return null
-  // Solo URLs absolutas o archivos servidos en /uploads (evitar apuntar a endpoints API)
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed
-  if (trimmed.startsWith('/uploads/')) {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8002'
-    return `${apiBase}${trimmed}`
-  }
-  return null
-}
+import { mediaUrl } from '../utils/media'
 
 function formatJoined(value) {
   return new Date(value).toLocaleDateString('es', {

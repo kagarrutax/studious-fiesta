@@ -76,7 +76,7 @@ async def upload_my_avatar(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> User:
-    current_user.avatar_url = await save_upload(image)
+    current_user.avatar_url = await save_upload(image, db)
     db.add(current_user)
     db.commit()
     db.refresh(current_user)

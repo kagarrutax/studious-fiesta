@@ -72,7 +72,7 @@ async def create_post_with_image(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> PostOut:
-    image_url = await save_upload(image)
+    image_url = await save_upload(image, db)
     post = Post(
         content=content.strip(),
         image_url=image_url,

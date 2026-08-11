@@ -35,14 +35,62 @@ export default {
         corkboard:
           'radial-gradient(circle at 1px 1px, rgba(243,239,226,0.05) 1px, transparent 0)',
       },
+      transitionTimingFunction: {
+        'sp-out': 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
       keyframes: {
         skeletonSweep: {
           '0%': { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' },
         },
+        'sp-toast-in': {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'sp-toast-out': {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(8px)' },
+        },
+        'sp-fade-up': {
+          '0%': { opacity: '0', transform: 'translateY(14px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'sp-page-in': {
+          '0%': { opacity: '0', transform: 'translateY(10px) scale(0.98)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        'sp-pin-pop': {
+          '0%': { opacity: '0', transform: 'scale(0)' },
+          '70%': { opacity: '1', transform: 'scale(1.15)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'sp-like-pop': {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.28)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        'sp-busy-pulse': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.65' },
+        },
       },
       animation: {
         skeleton: 'skeletonSweep 1.4s ease-in-out infinite',
+        'sp-toast-in': 'sp-toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'sp-toast-out': 'sp-toast-out 0.15s ease-in both',
+        'sp-fade-up': 'sp-fade-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'sp-page-in': 'sp-page-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'sp-pin-pop': 'sp-pin-pop 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both',
+        'sp-like-pop': 'sp-like-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+        'sp-busy-pulse': 'sp-busy-pulse 0.9s ease-in-out infinite',
+      },
+      transitionDelay: {
+        'sp-0': '0ms',
+        'sp-1': '60ms',
+        'sp-2': '120ms',
+        'sp-3': '180ms',
+        'sp-4': '240ms',
+        'sp-5': '100ms',
       },
       rotate: {
         'sp-1': '-0.4deg',

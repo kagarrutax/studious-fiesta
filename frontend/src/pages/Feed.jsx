@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import PostCard from '../components/PostCard'
+import { useToast } from '../context/ToastContext'
 import api from '../services/api'
+import { apiErrorMessage } from '../utils/errors'
 
 export default function Feed() {
+  const toast = useToast()
   const [posts, setPosts] = useState([])
   const [content, setContent] = useState('')
   const [imageFile, setImageFile] = useState(null)
@@ -17,7 +20,9 @@ export default function Feed() {
       const { data } = await api.get('/api/posts')
       setPosts(data)
     } catch (err) {
-      setError(err.response?.data?.detail || 'No se pudo cargar el feed')
+      const message = apiErrorMessage(err, 'No se pudo cargar el feed')
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
@@ -49,9 +54,11 @@ export default function Feed() {
       setContent('')
       setImageFile(null)
       event.target.reset()
+      toast.success('Tu post se publicó en el tablón')
     } catch (err) {
-      const detail = err.response?.data?.detail
-      setError(typeof detail === 'string' ? detail : 'No se pudo publicar')
+      const message = apiErrorMessage(err, 'No se pudo publicar')
+      setError(message)
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
@@ -67,11 +74,11 @@ export default function Feed() {
 
   return (
     <section className="sp-container">
-      <h1 className="font-display text-3xl mb-4">Feed</h1>
+      <h1 className="font-display text-3xl mb-4 sp-enter">Feed</h1>
 
       <form
         onSubmit={handleCreate}
-        className="relative mb-6 rounded-lg border border-dashed border-strong bg-sp-surface p-4 shadow-card"
+        className="relative mb-6 rounded-lg border border-dashed border-strong bg-sp-surface p-4 shadow-card sp-enter sp-delay-1"
       >
         <textarea
           className="w-full min-h-[96px] resize-y bg-transparent border-0 text-sp-ink placeholder:text-sp-ink-faint focus:outline-none focus:ring-0"
@@ -99,6 +106,7 @@ export default function Feed() {
               className="sp-btn-primary"
               type="submit"
               disabled={submitting || !content.trim()}
+              aria-busy={submitting}
             >
               {submitting ? 'Publicando…' : 'Publicar'}
             </button>
@@ -115,7 +123,7 @@ export default function Feed() {
           <div className="sp-skeleton" />
         </>
       ) : posts.length === 0 ? (
-        <p className="text-sp-ink-muted">Aún no hay publicaciones. Sé el primero.</p>
+        <p className="sp-empty">Aún no hay publicaciones. Sé el primero.</p>
       ) : (
         posts.map((post, index) => (
           <PostCard key={post.id} post={post} index={index} onUpdated={updatePost} onDeleted={handlePostDeleted} />
