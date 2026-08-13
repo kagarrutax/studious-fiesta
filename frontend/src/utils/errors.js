@@ -1,7 +1,8 @@
+import { API_BASE_URL } from '../services/config'
+
 export function apiErrorMessage(err, fallback = 'Ocurrió un error') {
   if (!err.response) {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8002'
-    return `No hay conexión con el API (${apiUrl}). Si usas la app local, arranca el backend; si usas Vercel, espera a que despierte Render.`
+    return `No hay conexión con el API (${API_BASE_URL}). Si usas la app local, arranca el backend; si usas Vercel, espera a que despierte Render.`
   }
   const detail = err.response.data?.detail
   if (typeof detail === 'string') return detail

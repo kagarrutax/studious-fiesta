@@ -4,16 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        'sp-bg': '#16241C',
-        'sp-surface': '#1F3327',
-        'sp-surface-raised': '#28402F',
-        'sp-ink': '#F3EFE2',
-        'sp-ink-muted': '#A9B8AC',
-        'sp-ink-faint': '#6E8074',
-        'sp-pink': '#FF5DA2',
-        'sp-yellow': '#F4D35E',
-        'sp-cyan': '#7EE8CB',
-        'sp-danger': '#FF6B6B',
+        'sp-bg': '#F0F4F2',
+        'sp-surface': '#FFFFFF',
+        'sp-surface-raised': '#E8F0EA',
+        'sp-ink': '#111827',
+        'sp-ink-muted': '#4B5563',
+        'sp-ink-faint': '#9CA3AF',
+        'sp-pink': '#1877F2', /* Reused as primary blue/celeste */
+        'sp-yellow': '#F59E0B',
+        'sp-cyan': '#0EA5E9', /* Light blue / celeste */
+        'sp-danger': '#EF4444',
       },
       fontFamily: {
         display: ['"Bricolage Grotesque"', 'Segoe UI', 'sans-serif'],

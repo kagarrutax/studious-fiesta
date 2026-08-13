@@ -21,6 +21,7 @@ class UserPublic(BaseModel):
     username: str
     email: EmailStr
     avatar_url: str | None = None
+    cover_url: str | None = None
     bio: str | None = None
     created_at: datetime
 

@@ -22,7 +22,7 @@ para frontend y FastAPI para backend.
 
 - **Frontend:** React 19, Vite, React Router, Tailwind CSS, Axios.
 - **Backend:** FastAPI, SQLAlchemy, Pydantic, JWT (bcrypt).
-- **Base de datos:** SQLite (desarrollo).
+- **Base de datos:** PostgreSQL (desarrollo).
 - **Despliegue:** Render (Backend), Vercel (Frontend).
 - **Comunicación:** REST/JSON + JWT.
 

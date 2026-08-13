@@ -29,6 +29,25 @@ async def save_upload(file: UploadFile) -> str:
             detail="La imagen supera el límite de 5 MB.",
         )
 
+    if settings.storage_backend.lower() == "cloudinary":
+        try:
+            import cloudinary
+            import cloudinary.uploader
+
+            cloudinary.config(
+                cloud_name=settings.cloudinary_cloud_name,
+                api_key=settings.cloudinary_api_key,
+                api_secret=settings.cloudinary_api_secret,
+                secure=True,
+            )
+            response = cloudinary.uploader.upload(data, folder="studious_party")
+            return response.get("secure_url")
+        except Exception as err:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error al subir imagen a Cloudinary: {err}",
+            )
+
     extension = Path(file.filename or "upload.bin").suffix.lower() or ".bin"
     filename = f"{uuid4().hex}{extension}"
     destination = ensure_upload_dir() / filename

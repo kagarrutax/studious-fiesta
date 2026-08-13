@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Feed from './pages/Feed'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import Messages from './pages/Messages'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Search from './pages/Search'
@@ -52,6 +53,22 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Search />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="messages"
+          element={
+            <ProtectedRoute>
+              <Messages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="messages/:userId"
+          element={
+            <ProtectedRoute>
+              <Messages />
             </ProtectedRoute>
           }
         />

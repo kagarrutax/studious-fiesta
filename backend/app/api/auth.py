@@ -58,12 +58,34 @@ def update_me(
     current_user: User = Depends(get_current_user),
 ) -> User:
     data = payload.model_dump(exclude_unset=True)
+
+    if "username" in data and data["username"]:
+        new_username = data["username"].strip()
+        conflict = db.scalar(
+            select(User).where(
+                User.username == new_username,
+                User.id != current_user.id,
+            )
+        )
+        if conflict is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Ese nombre de usuario ya está en uso",
+            )
+        current_user.username = new_username
+
     if "bio" in data:
         bio = data["bio"]
         current_user.bio = bio.strip() if isinstance(bio, str) and bio.strip() else None
+
     if "avatar_url" in data:
         url = data["avatar_url"]
         current_user.avatar_url = url.strip() if isinstance(url, str) and url.strip() else None
+
+    if "cover_url" in data:
+        url = data["cover_url"]
+        current_user.cover_url = url.strip() if isinstance(url, str) and url.strip() else None
+
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
@@ -77,6 +99,19 @@ async def upload_my_avatar(
     current_user: User = Depends(get_current_user),
 ) -> User:
     current_user.avatar_url = await save_upload(image)
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
+@router.post("/me/cover", response_model=UserPublic)
+async def upload_my_cover(
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> User:
+    current_user.cover_url = await save_upload(image)
     db.add(current_user)
     db.commit()
     db.refresh(current_user)

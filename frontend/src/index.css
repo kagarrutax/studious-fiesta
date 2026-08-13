@@ -45,18 +45,15 @@
   }
 
   .sp-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3
-      font-semibold text-sm cursor-pointer transition
-      hover:brightness-110 active:translate-y-px
-      motion-reduce:transition-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-semibold text-sm cursor-pointer transition hover:brightness-110 active:translate-y-px motion-reduce:transition-none;
   }
 
   .sp-btn-primary {
-    @apply sp-btn bg-sp-pink text-[#1B1220];
+    @apply sp-btn bg-sp-pink text-white shadow-sm hover:shadow-md hover:bg-blue-600;
   }
 
   .sp-btn-ghost {
-    @apply sp-btn bg-transparent border border-strong text-sp-ink hover:border-sp-cyan;
+    @apply sp-btn bg-transparent text-sp-ink-muted hover:bg-sp-surface-raised hover:text-sp-ink;
   }
 
   .sp-container {
@@ -64,9 +61,7 @@
   }
 
   .sp-card {
-    @apply relative bg-sp-surface border border-DEFAULT rounded-lg p-5 mb-5 shadow-card
-      transition hover:-translate-y-0.5 hover:shadow-raised hover:rotate-0
-      motion-reduce:transition-none motion-reduce:hover:translate-y-0;
+    @apply relative bg-sp-surface border border-strong rounded-xl p-5 mb-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:rotate-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0;
   }
 
   .sp-pin {
@@ -86,13 +81,11 @@
   }
 
   .sp-notecard {
-    @apply relative w-full max-w-[380px] bg-sp-surface border border-dashed border-strong
-      rounded-lg px-5 py-6 shadow-raised;
+    @apply relative w-full max-w-[380px] bg-sp-surface border border-dashed border-strong rounded-lg px-5 py-6 shadow-raised;
   }
 
   .sp-input {
-    @apply w-full bg-sp-surface-raised border border-DEFAULT rounded-md p-3 text-sp-ink
-      text-base transition focus:border-sp-cyan focus:outline-none;
+    @apply w-full bg-sp-surface-raised border border-DEFAULT rounded-md p-3 text-sp-ink text-base transition focus:border-sp-cyan focus:outline-none;
   }
 
   .sp-input-error {
@@ -108,8 +101,7 @@
   }
 
   .sp-skeleton {
-    @apply h-36 rounded-lg mb-5 bg-gradient-to-r from-sp-surface via-sp-surface-raised to-sp-surface
-      bg-[length:200%_100%] animate-skeleton motion-reduce:animate-none;
+    @apply h-36 rounded-lg mb-5 bg-gradient-to-r from-sp-surface via-sp-surface-raised to-sp-surface bg-[length:200%_100%] animate-skeleton motion-reduce:animate-none;
   }
 
   .sp-divider {

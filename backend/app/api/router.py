@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 
 from app.api.auth import router as auth_router
+from app.api.messages import router as messages_router
 from app.api.posts import router as posts_router
+from app.api.search import router as search_router
 from app.api.stats import router as stats_router
 from app.api.users import router as users_router
-from app.api.search import router as search_router
 
 router = APIRouter()
 router.include_router(auth_router)
@@ -12,6 +13,7 @@ router.include_router(posts_router)
 router.include_router(users_router)
 router.include_router(stats_router)
 router.include_router(search_router)
+router.include_router(messages_router)
 
 
 @router.get("/health")

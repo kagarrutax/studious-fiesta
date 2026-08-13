@@ -25,6 +25,7 @@ def get_user_profile(
         id=user.id,
         username=user.username,
         avatar_url=user.avatar_url,
+        cover_url=user.cover_url,
         bio=user.bio,
         created_at=user.created_at,
         posts_count=posts_count,

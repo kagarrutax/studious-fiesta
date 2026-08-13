@@ -6,7 +6,7 @@ from app.api.deps import get_current_user
 from app.core.uploads import save_upload
 from app.db import get_db
 from app.models import Comment, Like, Post, User
-from app.schemas import CommentCreate, CommentOut, LikeToggleOut, PostCreate, PostOut
+from app.schemas import CommentCreate, CommentOut, LikeToggleOut, PostCreate, PostOut, PostUpdate
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
@@ -55,8 +55,14 @@ def create_post_json(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> PostOut:
+    content_clean = payload.content.strip() if payload.content and payload.content.strip() else None
+    if not content_clean and not payload.image_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debe ingresar texto o seleccionar una imagen",
+        )
     post = Post(
-        content=payload.content.strip(),
+        content=content_clean,
         image_url=payload.image_url,
         author_id=current_user.id,
     )
@@ -67,14 +73,26 @@ def create_post_json(
 
 @router.post("/upload", response_model=PostOut, status_code=status.HTTP_201_CREATED)
 async def create_post_with_image(
-    content: str = Form(..., min_length=1, max_length=2000),
-    image: UploadFile = File(...),
+    content: str | None = Form(default=None),
+    image: UploadFile | None = File(default=None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> PostOut:
-    image_url = await save_upload(image)
+    content_clean = content.strip() if (content and content.strip()) else None
+    if not content_clean and image is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debe ingresar texto o seleccionar una imagen",
+        )
+    if content_clean and len(content_clean) > 2000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El contenido no puede superar los 2000 caracteres",
+        )
+
+    image_url = await save_upload(image) if image is not None else None
     post = Post(
-        content=content.strip(),
+        content=content_clean,
         image_url=image_url,
         author_id=current_user.id,
     )
@@ -175,3 +193,54 @@ def create_comment(
         created_at=comment.created_at,
         author=comment.user,
     )
+
+
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    """Elimina una publicación propia. Las relaciones (likes, comments) se
+    borran automáticamente por cascade='all, delete-orphan' definido en el modelo."""
+    post = db.get(Post, post_id)
+    if post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Publicación no encontrada")
+    if post.author_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para eliminar esta publicación",
+        )
+    db.delete(post)
+    db.commit()
+
+
+@router.patch("/{post_id}", response_model=PostOut)
+def edit_post(
+    post_id: int,
+    payload: PostUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> PostOut:
+    """Edita el contenido textual de una publicación propia.
+    Preserva imagen, likes, comentarios y autor reutilizando
+    get_post_or_404 + serialize_post."""
+    post = db.get(Post, post_id)
+    if post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Publicación no encontrada")
+    if post.author_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para editar esta publicación",
+        )
+    content_clean = payload.content.strip() if payload.content and payload.content.strip() else None
+    if not content_clean and not post.image_url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La publicación no puede quedar sin texto ni imagen",
+        )
+    post.content = content_clean
+    db.add(post)
+    db.commit()
+    # Recarga con relaciones completas para devolver PostOut correcto
+    return serialize_post(get_post_or_404(db, post_id), current_user.id)
