@@ -198,7 +198,7 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
         <Image
           source={{ uri: imageSrc }}
           style={styles.image}
-          resizeMode="cover"
+          resizeMode="contain"
           onError={() => setImageBroken(true)}
         />
       )}
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   saveText: { color: colors.ink, fontWeight: '700', fontSize: 12 },
   image: {
     width: '100%',
-    height: 220,
+    height: 180,
     borderRadius: 8,
     marginBottom: 10,
     backgroundColor: colors.surfaceRaised,

@@ -202,12 +202,14 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
       )}
 
       {showImage && !isEditing && (
-        <img
-          className="mb-3 w-full max-h-80 object-cover rounded-md border border-DEFAULT"
-          src={imageSrc}
-          alt="Adjunto de la publicación"
-          onError={() => setImageBroken(true)}
-        />
+        <div className="mb-3 overflow-hidden rounded-md border border-DEFAULT bg-sp-surface-raised">
+          <img
+            className="mx-auto block max-h-56 w-full object-contain"
+            src={imageSrc}
+            alt="Adjunto de la publicación"
+            onError={() => setImageBroken(true)}
+          />
+        </div>
       )}
 
       <div className="sp-divider pt-3 mt-1 flex flex-wrap gap-3">
