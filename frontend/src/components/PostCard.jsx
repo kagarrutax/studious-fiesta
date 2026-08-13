@@ -202,9 +202,9 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
       )}
 
       {showImage && !isEditing && (
-        <div className="mb-3 overflow-hidden rounded-md border border-DEFAULT bg-sp-surface-raised">
+        <div className="mb-3 h-80 w-full overflow-hidden rounded-md bg-sp-bg sm:h-96">
           <img
-            className="mx-auto block max-h-56 w-full object-contain"
+            className="h-full w-full object-cover object-center"
             src={imageSrc}
             alt="Adjunto de la publicación"
             onError={() => setImageBroken(true)}
