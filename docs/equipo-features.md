@@ -11,6 +11,8 @@
 | 4 | meilynperea2-debug | Dashboard actividad | `feature/dashboard-actividad` |
 | 5 | Adrian Arboleda | UX / toasts + docs | `feature/notificaciones-ui` |
 
+**Estado Sprint 1:** completado en código (follow + lista de seguidores, editar/borrar posts, búsqueda, dashboard con actividad reciente, toasts y centro de avisos con badge).
+
 ---
 
 ## Persona 1 — Yokabeth Valdes — Seguir usuarios (Follow)

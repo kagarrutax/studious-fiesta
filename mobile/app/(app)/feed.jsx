@@ -52,6 +52,10 @@ export default function FeedScreen() {
     setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)))
   }
 
+  function handlePostDeleted(postId) {
+    setPosts((prev) => prev.filter((post) => post.id !== postId))
+  }
+
   if (loading && posts.length === 0) {
     return (
       <View style={styles.center}>
@@ -91,7 +95,9 @@ export default function FeedScreen() {
         ListEmptyComponent={
           <Text style={styles.empty}>Aún no hay publicaciones. ¡Sé el primero!</Text>
         }
-        renderItem={({ item }) => <PostCard post={item} onUpdated={updatePost} />}
+        renderItem={({ item }) => (
+          <PostCard post={item} onUpdated={updatePost} onDeleted={handlePostDeleted} />
+        )}
       />
     </View>
   )

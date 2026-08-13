@@ -92,6 +92,7 @@ def get_post(
     return serialize_post(get_post_or_404(db, post_id), current_user.id)
 
 
+@router.patch("/{post_id}", response_model=PostOut)
 @router.put("/{post_id}", response_model=PostOut)
 def update_post(
     post_id: int,

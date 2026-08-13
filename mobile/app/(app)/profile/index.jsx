@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import { useFocusEffect, useRouter } from 'expo-router'
+import { useFocusEffect, useRouter, Link } from 'expo-router'
 import PostCard from '@/src/components/PostCard'
 import { useAuth } from '@/src/context/AuthContext'
 import api from '@/src/services/api'
@@ -21,9 +21,11 @@ export default function MyProfileScreen() {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [posts, setPosts] = useState([])
+  const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const [followers, setFollowers] = useState([])
 
   const load = useCallback(async (isRefresh = false) => {
     if (!user?.id) return
@@ -31,8 +33,14 @@ export default function MyProfileScreen() {
     else setLoading(true)
     setError('')
     try {
-      const { data } = await api.get('/api/posts')
-      setPosts(data.filter((p) => String(p.author_id) === String(user.id)))
+      const [meRes, postsRes, followersRes] = await Promise.all([
+        api.get(`/api/users/${user.id}`),
+        api.get('/api/posts'),
+        api.get(`/api/users/${user.id}/followers`),
+      ])
+      setProfile(meRes.data)
+      setPosts(postsRes.data.filter((p) => String(p.author_id) === String(user.id)))
+      setFollowers(followersRes.data || [])
     } catch (err) {
       setError(apiErrorMessage(err, 'No se pudo cargar el perfil'))
     } finally {
@@ -54,6 +62,10 @@ export default function MyProfileScreen() {
 
   function updatePost(updated) {
     setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)))
+  }
+
+  function deletePost(postId) {
+    setPosts((prev) => prev.filter((post) => post.id !== postId))
   }
 
   const avatar = mediaUrl(user?.avatar_url)
@@ -87,6 +99,24 @@ export default function MyProfileScreen() {
           <Text style={styles.username}>@{user.username}</Text>
           <Text style={styles.email}>{user.email}</Text>
           {user.bio ? <Text style={styles.bio}>{user.bio}</Text> : null}
+          <View style={styles.counts}>
+            <Text style={styles.countText}>{profile?.followers_count ?? 0} seguidores</Text>
+            <Text style={styles.countText}>{profile?.following_count ?? 0} siguiendo</Text>
+          </View>
+          {followers.length > 0 ? (
+            <View style={styles.followers}>
+              <Text style={styles.followersTitle}>Seguidores</Text>
+              {followers.map((person) => (
+                <Link key={person.id} href={`/(app)/profile/${person.id}`} asChild>
+                  <Pressable style={styles.followerChip}>
+                    <Text style={styles.followerText}>@{person.username}</Text>
+                  </Pressable>
+                </Link>
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.followersEmpty}>Nadie te sigue todavía.</Text>
+          )}
           {error ? <Text style={styles.error}>{error}</Text> : null}
           <Pressable style={styles.logout} onPress={onLogout}>
             <Text style={styles.logoutText}>Cerrar sesión</Text>
@@ -95,7 +125,9 @@ export default function MyProfileScreen() {
         </View>
       }
       ListEmptyComponent={<Text style={styles.empty}>Aún no has publicado nada.</Text>}
-      renderItem={({ item }) => <PostCard post={item} onUpdated={updatePost} />}
+      renderItem={({ item }) => (
+        <PostCard post={item} onUpdated={updatePost} onDeleted={deletePost} />
+      )}
     />
   )
 }
@@ -120,6 +152,20 @@ const styles = StyleSheet.create({
   username: { color: colors.ink, fontSize: 22, fontWeight: '800' },
   email: { color: colors.inkMuted, marginTop: 4 },
   bio: { color: colors.ink, marginTop: 10, textAlign: 'center', lineHeight: 20 },
+  counts: { flexDirection: 'row', gap: 16, marginTop: 10 },
+  countText: { color: colors.inkMuted, fontSize: 13, fontWeight: '600' },
+  followers: { width: '100%', marginTop: 16 },
+  followersTitle: { color: colors.ink, fontWeight: '700', marginBottom: 8, textAlign: 'center' },
+  followerChip: {
+    alignSelf: 'center',
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 6,
+  },
+  followerText: { color: colors.ink, fontWeight: '600' },
+  followersEmpty: { color: colors.inkMuted, marginTop: 12, fontSize: 13 },
   error: { color: colors.error, marginTop: 8 },
   logout: {
     marginTop: 16,

@@ -1,6 +1,9 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import api from '../services/api'
-import { ACCENT_TOP, ROTATIONS, cycleClass } from '../design/tokens'
+import { apiErrorMessage } from '../utils/errors'
+import { withApiRetry } from '../utils/withRetry'
+import { ACCENT_TOP, ROTATIONS, cycleClass, initials } from '../design/tokens'
 
 const STAT_LABELS = [
   { key: 'users', label: 'Usuarios' },
@@ -9,16 +12,23 @@ const STAT_LABELS = [
   { key: 'comments', label: 'Comentarios' },
 ]
 
+function formatWhen(value) {
+  try {
+    return new Date(value).toLocaleString('es', { dateStyle: 'medium', timeStyle: 'short' })
+  } catch {
+    return ''
+  }
+}
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api
-      .get('/api/stats')
+    withApiRetry(() => api.get('/api/stats'))
       .then((res) => setStats(res.data))
-      .catch((err) => setError(err.response?.data?.detail || 'No se pudieron cargar las estadísticas'))
+      .catch((err) => setError(apiErrorMessage(err, 'No se pudieron cargar las estadísticas')))
       .finally(() => setLoading(false))
   }, [])
 
@@ -51,18 +61,49 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="rounded-lg border border-DEFAULT bg-sp-surface p-5 shadow-card sp-enter sp-delay-4">
-            <h2 className="font-display text-xl mb-4">Actividad reciente</h2>
-            {/* Supuesto: usamos los totales de /api/stats como filas de resumen. */}
-            {STAT_LABELS.map((item, index) => (
-              <div
-                key={item.key}
-                className={`flex items-center justify-between py-3 ${index > 0 ? 'sp-divider' : ''}`}
-              >
-                <span className="text-sp-ink-muted">{item.label}</span>
-                <span className="font-mono text-sm text-sp-ink">{stats[item.key]}</span>
-              </div>
-            ))}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="rounded-lg border border-DEFAULT bg-sp-surface p-5 shadow-card sp-enter sp-delay-4">
+              <h2 className="font-display text-xl mb-4">Últimos posts</h2>
+              {(stats.recent_posts || []).length === 0 ? (
+                <p className="sp-meta mb-0">Aún no hay publicaciones.</p>
+              ) : (
+                (stats.recent_posts || []).map((post) => (
+                  <div key={post.id} className="sp-divider py-3 first:border-0 first:pt-0">
+                    <Link
+                      to={`/users/${post.author?.id}`}
+                      className="font-semibold text-sp-ink no-underline hover:text-sp-cyan"
+                    >
+                      @{post.author?.username}
+                    </Link>
+                    <p className="mb-0 mt-1 text-sm text-sp-ink-muted line-clamp-2">{post.content}</p>
+                    <p className="sp-meta mb-0 mt-1">{formatWhen(post.created_at)}</p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="rounded-lg border border-DEFAULT bg-sp-surface p-5 shadow-card sp-enter sp-delay-4">
+              <h2 className="font-display text-xl mb-4">Usuarios nuevos</h2>
+              {(stats.recent_users || []).length === 0 ? (
+                <p className="sp-meta mb-0">Aún no hay usuarios.</p>
+              ) : (
+                (stats.recent_users || []).map((person) => (
+                  <Link
+                    key={person.id}
+                    to={`/users/${person.id}`}
+                    className="flex items-center gap-3 py-3 sp-divider first:border-0 first:pt-0 no-underline hover:no-underline"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sp-surface-raised text-xs font-semibold text-sp-yellow">
+                      {initials(person.username)}
+                    </span>
+                    <span>
+                      <span className="block font-semibold text-sp-ink">@{person.username}</span>
+                      <span className="sp-meta mb-0">{formatWhen(person.created_at)}</span>
+                    </span>
+                  </Link>
+                ))
+              )}
+            </div>
           </div>
         </>
       )}

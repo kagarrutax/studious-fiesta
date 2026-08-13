@@ -17,12 +17,14 @@ function formatDate(value) {
 
 export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
   const { user } = useAuth()
+  const toast = useToast()
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState(null)
   const [showComments, setShowComments] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  
+  const [imageBroken, setImageBroken] = useState(false)
+  const [likePop, setLikePop] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(post.content)
 
@@ -102,6 +104,7 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
     setError('')
     try {
       await api.delete(`/api/posts/${post.id}`)
+      toast.success('Publicación eliminada')
       if (onDeleted) onDeleted(post.id)
     } catch (err) {
       setError(err.response?.data?.detail || 'Error al eliminar el post')
@@ -114,11 +117,12 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
     setBusy(true)
     setError('')
     try {
-      const { data } = await api.put(`/api/posts/${post.id}`, {
+      const { data } = await api.patch(`/api/posts/${post.id}`, {
         content: editContent.trim(),
       })
       onUpdated(data)
       setIsEditing(false)
+      toast.success('Publicación actualizada')
     } catch (err) {
       setError(err.response?.data?.detail || 'Error al editar el post')
     } finally {
@@ -197,7 +201,7 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
         <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">{post.content}</p>
       )}
 
-      {imageSrc && !isEditing && (
+      {showImage && !isEditing && (
         <img
           className="mb-3 w-full max-h-80 object-cover rounded-md border border-DEFAULT"
           src={imageSrc}

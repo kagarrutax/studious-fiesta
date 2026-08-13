@@ -6,8 +6,9 @@
 
 ## Alcance MVP
 
-Incluye: login/registro, feed, crear post con imagen, likes, comentarios, perfil propio/ajeno.  
-Fuera de v1: búsqueda, follow, dashboard, editar/borrar, push, stores.
+Incluye: login/registro, feed, crear post con imagen, likes, comentarios, perfil propio/ajeno, búsqueda, follow, editar/borrar posts, cold start retry.
+
+Fuera de alcance: push notifications, App Store/Play Store producción.
 
 ## Arquitectura
 
@@ -29,6 +30,7 @@ Expo App ──REST/JWT──▶ FastAPI (Render) ──SQL──▶ Supabase Po
 | `(auth)/login` | Login |
 | `(auth)/register` | Registro |
 | `(app)/feed` | Feed + interacciones |
+| `(app)/search` | Buscar usuarios y posts |
 | `(app)/compose` | Crear post + imagen |
 | `(app)/profile` | Perfil propio + logout |
 | `(app)/profile/[id]` | Perfil de otro usuario |
@@ -46,18 +48,18 @@ Ver [`mobile/README.md`](../mobile/README.md).
 - [x] Perfil propio y ajeno
 - [x] Documentación en repo
 - [x] Perfil EAS `preview` para APK (`mobile/eas.json`)
-- [x] Cold start móvil: `withRetry` / wake `/api/health` en login, register y feed (Adrian — Sprint 2)
+- [x] Cold start móvil: `withRetry` / wake `/api/health` en login, register y feed
+- [x] Cold start web (login/register/feed/dashboard)
+- [x] Editar / borrar posts (API PATCH/DELETE + web + móvil)
+- [x] Búsqueda móvil (`GET /api/search`)
+- [x] Follow móvil + contadores
 
-## Sprint 2 (equipo)
+## Sprint 2 (cerrado en este repo)
 
-Reparto en [`equipo-features.md`](./equipo-features.md) y PDF [`Reparto_Sprint2_Mejoras_UX.pdf`](./Reparto_Sprint2_Mejoras_UX.pdf).
+El equipo no continuó las ramas; Adrian implementó las 3 mejoras en `main`/rama actual.
 
-| Persona | Entrega |
-|---------|---------|
-| Adrian | Cold start **móvil** (hecho en código; redeploy/APK al cerrar sprint) |
-| Meilyn | Cold start **web** + QA |
-| Jessica | Editar / borrar posts |
-| Yadira | Búsqueda móvil |
-| Yokabeth | Follow móvil |
-
-Fuera de v1 pendiente de otras personas: búsqueda, follow, editar/borrar, push, stores.
+| Entrega | Estado |
+|---------|--------|
+| Cold start web + móvil | Hecho |
+| Editar / borrar posts | Hecho |
+| Búsqueda + follow móvil | Hecho |

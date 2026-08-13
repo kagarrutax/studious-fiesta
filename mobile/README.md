@@ -45,6 +45,9 @@ Comandos útiles: `npm run android` · `npm run ios` · `npm run web`
 - Like y comentarios
 - Crear post (texto o texto + imagen de galería)
 - Perfil propio y perfil al tocar `@usuario`
+- Búsqueda de usuarios y posts (tab Buscar)
+- Seguir / dejar de seguir en perfiles
+- Editar y borrar tus posts
 - Cerrar sesión
 
 ## Estructura

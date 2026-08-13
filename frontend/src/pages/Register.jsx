@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
+import { withApiRetry } from '../utils/withRetry'
 
 export default function Register() {
   const { isAuthenticated, login } = useAuth()
@@ -15,6 +16,7 @@ export default function Register() {
     password: '',
   })
   const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   if (isAuthenticated) {
@@ -28,17 +30,25 @@ export default function Register() {
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+    setStatus('')
     setSubmitting(true)
     try {
-      await api.post('/api/auth/register', form)
-      const { data } = await api.post('/api/auth/login', {
-        email: form.email,
-        password: form.password,
-      })
+      const { data } = await withApiRetry(
+        async () => {
+          await api.post('/api/auth/register', form)
+          return api.post('/api/auth/login', {
+            email: form.email,
+            password: form.password,
+          })
+        },
+        { onWake: () => setStatus('Despertando el servidor… puede tardar ~30–60 s') },
+      )
+      setStatus('')
       login(data.access_token)
       toast.success('Cuenta creada. ¡Bienvenido a Studious Party!')
       navigate('/feed')
     } catch (err) {
+      setStatus('')
       const message = apiErrorMessage(err, 'No se pudo registrar')
       setError(message)
       toast.error(message)
@@ -98,10 +108,11 @@ export default function Register() {
               minLength={6}
               autoComplete="new-password"
             />
+            {status && <p className="text-sm text-sp-cyan mt-2 mb-0">{status}</p>}
             {hasError && <p className="sp-error-text">{error}</p>}
           </div>
           <button className="sp-btn-primary w-full" type="submit" disabled={submitting}>
-            {submitting ? 'Creando…' : 'Crear cuenta'}
+            {submitting ? (status ? 'Despertando…' : 'Creando…') : 'Crear cuenta'}
           </button>
         </form>
         <p className="mt-5 mb-0 text-center text-sm text-sp-ink-muted">

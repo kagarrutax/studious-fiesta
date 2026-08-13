@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -8,10 +8,24 @@ export default function Navbar() {
   const { isAuthenticated, user, logout, loading } = useAuth()
   const toast = useToast()
   const [open, setOpen] = useState(false)
+  const [noticesOpen, setNoticesOpen] = useState(false)
+  const noticesRef = useRef(null)
+
+  useEffect(() => {
+    if (!noticesOpen) return undefined
+    function onPointerDown(event) {
+      if (noticesRef.current && !noticesRef.current.contains(event.target)) {
+        setNoticesOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    return () => document.removeEventListener('mousedown', onPointerDown)
+  }, [noticesOpen])
 
   function handleLogout() {
     logout()
     setOpen(false)
+    setNoticesOpen(false)
     toast.info('Sesión cerrada')
   }
 
@@ -104,6 +118,51 @@ export default function Navbar() {
                   <span className="sp-meta !text-sp-ink-muted !normal-case tracking-normal">
                     @{user.username}
                   </span>
+                </div>
+              )}
+              {user && (
+                <div className="relative" ref={noticesRef}>
+                  <button
+                    type="button"
+                    className="relative sp-btn-ghost px-3 py-2 text-xs"
+                    aria-expanded={noticesOpen}
+                    onClick={() => {
+                      setNoticesOpen((v) => !v)
+                      toast.markNoticesRead()
+                    }}
+                  >
+                    Avisos
+                    {toast.unread > 0 && (
+                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-pink px-1 font-mono text-[10px] text-[#1B1220]">
+                        {toast.unread}
+                      </span>
+                    )}
+                  </button>
+                  {noticesOpen && (
+                    <div className="absolute left-0 z-50 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-dashed border-strong bg-sp-surface-raised p-3 shadow-card md:left-auto md:right-0">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="sp-meta mb-0">Centro de avisos</p>
+                        <button
+                          type="button"
+                          className="text-xs text-sp-cyan bg-transparent border-0 cursor-pointer"
+                          onClick={toast.clearNotices}
+                        >
+                          Limpiar
+                        </button>
+                      </div>
+                      {toast.notices.length === 0 ? (
+                        <p className="mb-0 text-sm text-sp-ink-muted">Sin avisos todavía.</p>
+                      ) : (
+                        <ul className="m-0 max-h-64 list-none space-y-2 overflow-y-auto p-0">
+                          {toast.notices.map((item) => (
+                            <li key={item.id} className="text-sm text-sp-ink">
+                              {item.message}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               <button type="button" className="sp-btn-ghost px-3 py-2 text-xs" onClick={handleLogout}>

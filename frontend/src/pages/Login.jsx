@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
+import { withApiRetry } from '../utils/withRetry'
 
 export default function Login() {
   const { isAuthenticated, login } = useAuth()
@@ -12,6 +13,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   if (isAuthenticated) {
@@ -21,13 +23,19 @@ export default function Login() {
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+    setStatus('')
     setSubmitting(true)
     try {
-      const { data } = await api.post('/api/auth/login', { email, password })
+      const { data } = await withApiRetry(
+        () => api.post('/api/auth/login', { email, password }),
+        { onWake: () => setStatus('Despertando el servidor… puede tardar ~30–60 s') },
+      )
+      setStatus('')
       login(data.access_token)
       toast.success('Sesión iniciada. ¡Bienvenido de nuevo!')
       navigate('/feed')
     } catch (err) {
+      setStatus('')
       const message = apiErrorMessage(err, 'No se pudo iniciar sesión')
       setError(message)
       toast.error(message)
@@ -73,10 +81,11 @@ export default function Login() {
               minLength={6}
               autoComplete="current-password"
             />
+            {status && <p className="text-sm text-sp-cyan mt-2 mb-0">{status}</p>}
             {hasError && <p className="sp-error-text">{error}</p>}
           </div>
           <button className="sp-btn-primary w-full" type="submit" disabled={submitting}>
-            {submitting ? 'Entrando…' : 'Iniciar sesión'}
+            {submitting ? (status ? 'Despertando…' : 'Entrando…') : 'Iniciar sesión'}
           </button>
         </form>
         <p className="mt-5 mb-0 text-center text-sm text-sp-ink-muted">

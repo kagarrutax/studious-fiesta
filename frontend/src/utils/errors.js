@@ -1,9 +1,10 @@
 import { apiBaseUrl } from './apiBase'
+import { isNetworkError } from './withRetry'
 
 export function apiErrorMessage(err, fallback = 'Ocurrió un error') {
-  if (!err.response) {
+  if (isNetworkError(err)) {
     const apiUrl = apiBaseUrl()
-    return `No hay conexión con el API (${apiUrl}). Si usas la app local, arranca el backend; si usas Vercel, espera a que despierte Render.`
+    return `No hay conexión con el API (${apiUrl}). Puede estar despertando Render; espera unos segundos y reintenta.`
   }
   const detail = err.response.data?.detail
   if (typeof detail === 'string') return detail

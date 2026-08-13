@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PostCard from '../components/PostCard'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { ACCENT_TOP, cycleClass, initials } from '../design/tokens'
 import { apiErrorMessage } from '../utils/errors'
@@ -18,6 +19,7 @@ function formatJoined(value) {
 export default function Profile() {
   const { userId } = useParams()
   const { user: me, setUser } = useAuth()
+  const toast = useToast()
   const [profile, setProfile] = useState(null)
   const [posts, setPosts] = useState([])
   const [error, setError] = useState('')
@@ -30,6 +32,7 @@ export default function Profile() {
   const [isFollowing, setIsFollowing] = useState(false)
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
+  const [followers, setFollowers] = useState([])
   const [followBusy, setFollowBusy] = useState(false)
 
   const isOwnProfile = Boolean(me && String(me.id) === String(userId))
@@ -39,14 +42,19 @@ export default function Profile() {
     setLoading(true)
     setError('')
     setEditing(false)
-    Promise.all([api.get(`/api/users/${userId}`), api.get('/api/posts')])
-      .then(([profileRes, postsRes]) => {
+    Promise.all([
+      api.get(`/api/users/${userId}`),
+      api.get('/api/posts'),
+      api.get(`/api/users/${userId}/followers`),
+    ])
+      .then(([profileRes, postsRes, followersRes]) => {
         if (cancelled) return
         setProfile(profileRes.data)
         setBio(profileRes.data.bio || '')
         setIsFollowing(profileRes.data.is_following || false)
         setFollowersCount(profileRes.data.followers_count || 0)
         setFollowingCount(profileRes.data.following_count || 0)
+        setFollowers(followersRes.data || [])
         setPosts(postsRes.data.filter((post) => String(post.author_id) === String(userId)))
       })
       .catch((err) => {
@@ -136,11 +144,15 @@ export default function Profile() {
         const { data } = await api.delete(`/api/users/${userId}/follow`)
         setIsFollowing(data.following)
         setFollowersCount(data.followers_count)
+        toast.info(`Dejaste de seguir a @${profile?.username || 'usuario'}`)
       } else {
         const { data } = await api.post(`/api/users/${userId}/follow`)
         setIsFollowing(data.following)
         setFollowersCount(data.followers_count)
+        toast.success(`Ahora sigues a @${profile?.username || 'usuario'}`)
       }
+      const { data: list } = await api.get(`/api/users/${userId}/followers`)
+      setFollowers(list || [])
     } catch (err) {
       setError(apiErrorMessage(err, 'No se pudo cambiar estado de seguimiento'))
     } finally {
@@ -298,6 +310,28 @@ export default function Profile() {
               <p className="sp-meta mb-0">{stat.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-5">
+          <h2 className="font-display text-lg mb-3">Seguidores</h2>
+          {followers.length === 0 ? (
+            <p className="sp-meta mb-0">Nadie sigue este perfil todavía.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {followers.map((person) => (
+                <Link
+                  key={person.id}
+                  to={`/users/${person.id}`}
+                  className="inline-flex items-center gap-2 rounded-md bg-sp-surface-raised px-3 py-2 no-underline hover:border-sp-cyan border border-transparent"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sp-bg text-[10px] font-semibold text-sp-yellow">
+                    {initials(person.username)}
+                  </span>
+                  <span className="text-sm font-semibold text-sp-ink">@{person.username}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 

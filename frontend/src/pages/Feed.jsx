@@ -3,6 +3,7 @@ import PostCard from '../components/PostCard'
 import { useToast } from '../context/ToastContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
+import { withApiRetry } from '../utils/withRetry'
 
 export default function Feed() {
   const toast = useToast()
@@ -17,7 +18,7 @@ export default function Feed() {
     setLoading(true)
     setError('')
     try {
-      const { data } = await api.get('/api/posts')
+      const { data } = await withApiRetry(() => api.get('/api/posts'))
       setPosts(data)
     } catch (err) {
       const message = apiErrorMessage(err, 'No se pudo cargar el feed')
