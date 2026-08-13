@@ -46,3 +46,18 @@ Ver [`mobile/README.md`](../mobile/README.md).
 - [x] Perfil propio y ajeno
 - [x] Documentación en repo
 - [x] Perfil EAS `preview` para APK (`mobile/eas.json`)
+- [x] Cold start móvil: `withRetry` / wake `/api/health` en login, register y feed (Adrian — Sprint 2)
+
+## Sprint 2 (equipo)
+
+Reparto en [`equipo-features.md`](./equipo-features.md) y PDF [`Reparto_Sprint2_Mejoras_UX.pdf`](./Reparto_Sprint2_Mejoras_UX.pdf).
+
+| Persona | Entrega |
+|---------|---------|
+| Adrian | Cold start **móvil** (hecho en código; redeploy/APK al cerrar sprint) |
+| Meilyn | Cold start **web** + QA |
+| Jessica | Editar / borrar posts |
+| Yadira | Búsqueda móvil |
+| Yokabeth | Follow móvil |
+
+Fuera de v1 pendiente de otras personas: búsqueda, follow, editar/borrar, push, stores.

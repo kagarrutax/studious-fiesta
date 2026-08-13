@@ -1,3 +1,5 @@
+import { apiBaseUrl } from './apiBase'
+
 /** Resuelve URLs de media (uploads locales o /api/media en BD). */
 export function mediaUrl(path) {
   if (!path || typeof path !== 'string') return null
@@ -7,8 +9,7 @@ export function mediaUrl(path) {
     return trimmed
   }
   if (trimmed.startsWith('/uploads/') || trimmed.startsWith('/api/media/')) {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8002'
-    return `${apiBase.replace(/\/$/, '')}${trimmed}`
+    return `${apiBaseUrl()}${trimmed}`
   }
   return null
 }

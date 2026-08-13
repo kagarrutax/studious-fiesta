@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext'
 import api from '@/src/services/api'
 import { apiErrorMessage } from '@/src/utils/errors'
+import { withApiRetry } from '@/src/utils/withRetry'
 import { colors } from '@/src/theme/tokens'
 
 export default function LoginScreen() {
@@ -20,6 +21,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
 
   if (isAuthenticated) {
@@ -28,15 +30,24 @@ export default function LoginScreen() {
 
   async function onSubmit() {
     setError('')
+    setStatus('')
     setBusy(true)
     try {
-      const { data } = await api.post('/api/auth/login', {
-        email: email.trim(),
-        password,
-      })
+      const { data } = await withApiRetry(
+        () =>
+          api.post('/api/auth/login', {
+            email: email.trim(),
+            password,
+          }),
+        {
+          onWake: () => setStatus('Despertando el servidor… puede tardar ~30–60 s'),
+        },
+      )
+      setStatus('')
       await login(data.access_token)
       router.replace('/(app)/feed')
     } catch (err) {
+      setStatus('')
       setError(apiErrorMessage(err, 'No se pudo iniciar sesión'))
     } finally {
       setBusy(false)
@@ -70,6 +81,7 @@ export default function LoginScreen() {
         onChangeText={setPassword}
       />
 
+      {status ? <Text style={styles.status}>{status}</Text> : null}
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <Pressable
@@ -106,6 +118,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontSize: 16,
   },
+  status: { color: colors.cyan, marginBottom: 12, fontSize: 13, lineHeight: 18 },
   error: { color: colors.error, marginBottom: 12 },
   btn: {
     backgroundColor: colors.pink,

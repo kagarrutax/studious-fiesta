@@ -12,22 +12,29 @@ import { useFocusEffect } from 'expo-router'
 import PostCard from '@/src/components/PostCard'
 import api from '@/src/services/api'
 import { apiErrorMessage } from '@/src/utils/errors'
+import { withApiRetry } from '@/src/utils/withRetry'
 import { colors } from '@/src/theme/tokens'
 
 export default function FeedScreen() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [waking, setWaking] = useState(false)
   const [error, setError] = useState('')
 
   const loadFeed = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true)
     else setLoading(true)
     setError('')
+    setWaking(false)
     try {
-      const { data } = await api.get('/api/posts')
+      const { data } = await withApiRetry(() => api.get('/api/posts'), {
+        onWake: () => setWaking(true),
+      })
       setPosts(data)
+      setWaking(false)
     } catch (err) {
+      setWaking(false)
       setError(apiErrorMessage(err, 'No se pudo cargar el feed'))
     } finally {
       setLoading(false)
@@ -49,7 +56,12 @@ export default function FeedScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={colors.cyan} />
-        <Text style={styles.hint}>Cargando tablón…</Text>
+        <Text style={styles.hint}>
+          {waking ? 'Despertando el servidor…' : 'Cargando tablón…'}
+        </Text>
+        {waking ? (
+          <Text style={styles.subhint}>Render free puede tardar ~30–60 s la primera vez.</Text>
+        ) : null}
       </View>
     )
   }
@@ -93,8 +105,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
+    paddingHorizontal: 24,
   },
-  hint: { color: colors.inkMuted },
+  hint: { color: colors.inkMuted, textAlign: 'center' },
+  subhint: { color: colors.inkFaint, fontSize: 12, textAlign: 'center' },
   list: { padding: 16, paddingBottom: 32 },
   empty: { color: colors.inkMuted, textAlign: 'center', marginTop: 40 },
   errorBox: {

@@ -158,3 +158,137 @@ git commit -m "add brief description of feature"
 git push -u origin HEAD
 # Luego abrir Pull Request en GitHub hacia main
 ```
+
+---
+
+# Sprint 2 — 3 mejoras UX (cold start, editar/borrar, search+follow móvil)
+
+**Objetivo:** que el producto aguante el cold start de Render, que el autor gestione sus posts, y que la app móvil tenga búsqueda y follow (paridad con la web).
+
+**Regla:** igual — 1 persona = 1 rama = 1 PR. No subir directo a `main`.
+
+| Persona | Integrante | Feature | Rama |
+|---------|------------|---------|------|
+| 1 | Yokabeth Valdes | Follow en app móvil | `feature/seguir-mobile` |
+| 2 | Jessica Angulo | Editar / borrar posts (API + web + móvil) | `feature/editar-borrar-post` |
+| 3 | YadiiCabeza96 | Búsqueda en app móvil | `feature/busqueda-mobile` |
+| 4 | meilynperea2-debug | Cold start web + QA de cierre | `feature/cold-start-web` |
+| 5 | Adrian Arboleda | Cold start móvil + docs + APK/redeploy | `feature/cold-start-mobile` |
+
+---
+
+## Sprint 2 — Persona 1 — Yokabeth — Follow móvil
+
+**Qué entrega:** en la app Expo, botón Seguir / Dejar de seguir y contadores en perfil.
+
+**Archivos (principalmente):**
+
+| Capa | Archivos |
+|------|----------|
+| UI móvil | `mobile/app/(app)/profile/[id].jsx`, `mobile/app/(app)/profile/index.jsx` |
+| API | **ya existe** — `POST/DELETE /api/users/{id}/follow`, `GET /api/users/{id}` |
+
+**No tocar:** search, posts edit/delete, auth, tabs layout (salvo lo mínimo).
+
+**Criterio:** desde la app se sigue a alguien y el contador de seguidores cambia (coherente con la web).
+
+---
+
+## Sprint 2 — Persona 2 — Jessica — Editar / borrar posts
+
+**Qué entrega:** el autor edita el texto y elimina su post en **web y móvil**. Completar la API si aún no está.
+
+**Archivos (principalmente):**
+
+| Capa | Archivos |
+|------|----------|
+| API | `backend/app/api/posts.py` |
+| Schemas | `backend/app/schemas/post.py` (`PostUpdate`) |
+| Tests | `backend/tests/test_posts.py` |
+| UI web | `frontend/src/components/PostCard.jsx`, Feed / Profile / Search (callback `onDeleted`) |
+| UI móvil | `mobile/src/components/PostCard.jsx` |
+
+**No tocar:** auth, follows, search API, Navbar.
+
+**Endpoints:**
+
+- `PATCH /api/posts/{id}` — body `{ content }`, solo autor  
+- `DELETE /api/posts/{id}` — 204, solo autor  
+
+**Criterio:** autor edita/borra; otro usuario no ve el menú “⋯”.
+
+---
+
+## Sprint 2 — Persona 3 — Yadira — Búsqueda móvil
+
+**Qué entrega:** tab **Buscar** en la app Expo (usuarios + posts).
+
+**Archivos (principalmente):**
+
+| Capa | Archivos |
+|------|----------|
+| UI móvil | **nuevo** `mobile/app/(app)/search.jsx`, `mobile/app/(app)/_layout.jsx` |
+| API | **ya existe** — `GET /api/search?q=` |
+| Referencia web | `frontend/src/pages/Search.jsx` |
+
+**No tocar:** `posts.py`, follows, auth.
+
+**Criterio:** buscar desde la app abre perfiles y muestra posts.
+
+---
+
+## Sprint 2 — Persona 4 — Meilyn — Cold start web + QA
+
+**Qué entrega:**
+
+1. Reintento / “Despertando el servidor…” en login, registro, feed y dashboard web.  
+2. Checklist QA del sprint completo antes del merge a `main`.
+
+**Archivos (principalmente):**
+
+| Capa | Archivos |
+|------|----------|
+| Utils | **nuevo** `frontend/src/utils/withRetry.js` (+ usar `apiBase.js`) |
+| UI | `frontend/src/pages/Login.jsx`, `Register.jsx`, `Feed.jsx`, `Dashboard.jsx` |
+
+**No tocar:** móvil (eso es Adrian), PostCard edit/delete, follows.
+
+**QA de cierre:**
+
+- [ ] Login web tras cold start de Render  
+- [ ] Login móvil tras cold start  
+- [ ] Autor edita y borra post (web + móvil)  
+- [ ] Otro usuario no ve menú editar/borrar  
+- [ ] Buscar usuario/post en app  
+- [ ] Seguir / dejar de seguir desde perfil app  
+- [ ] Contadores coherentes con la web  
+
+---
+
+## Sprint 2 — Persona 5 — Adrian — Cold start móvil + entrega
+
+**Qué entrega:** mismo patrón de wake/retry en la app Expo; docs; coordinar redeploy y APK.
+
+**Archivos (principalmente):**
+
+| Capa | Archivos |
+|------|----------|
+| Utils | **nuevo** `mobile/src/utils/withRetry.js` |
+| UI | `mobile/app/(auth)/login.jsx`, `register.jsx`, `mobile/app/(app)/feed.jsx` |
+| Docs | `mobile/README.md`, `docs/PLAN_APP_MOVIL.md`, este archivo |
+
+**No tocar:** frontend web cold start (Meilyn), edit/delete (Jessica), search/follow móvil (Yadira/Yokabeth).
+
+**Tras merges:** redeploy Render (si Jessica tocó API) + Vercel + APK nuevo (`versionCode` +1) si aplica.
+
+---
+
+## Sprint 2 — Orden de merge
+
+1. Adrian + Meilyn (cold start; Adrian solo `mobile/`, Meilyn solo `frontend/`) — en paralelo  
+2. Jessica (API posts + PostCard web/móvil)  
+3. Yadira (tab Buscar — toca `_layout`)  
+4. Yokabeth (follow en perfiles)  
+5. Meilyn confirma QA → merge a `main`
+
+Si Yadira y Yokabeth terminan juntas: primero Yadira (tabs), luego Yokabeth (perfil).

@@ -87,4 +87,10 @@ No hace falta Android Studio ni Play Store. El perfil `preview` genera **APK** (
 
 ## Nota sobre Render
 
-El plan free de Render puede tardar ~30–60 s en despertar. La app muestra error de conexión con opción de reintentar.
+El plan free de Render puede tardar ~30–60 s en despertar.
+
+La app **reintenta sola**: en login, registro y feed hace ping a `/api/health` y muestra
+“Despertando el servidor…” antes de fallar. Si aún así falla, usa **Reintentar**.
+
+Implementación: `mobile/src/utils/withRetry.js` (`wakeApi` + `withApiRetry`).
+
