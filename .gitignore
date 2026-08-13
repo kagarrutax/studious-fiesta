@@ -34,3 +34,7 @@ Thumbs.db
 
 # Uploads (dev)
 backend/uploads/
+
+.vercel
+frontend/tmp-visual/
+

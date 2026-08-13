@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { useToast } from '../context/ToastContext'
 import api from '../services/api'
@@ -232,30 +233,33 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
         </button>
       )}
 
-      {lightboxOpen && showImage && (
-        <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#0b1210]/92 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Imagen ampliada"
-          onClick={() => setLightboxOpen(false)}
-        >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-md bg-sp-surface-raised px-3 py-2 text-sm font-semibold text-sp-ink"
+      {lightboxOpen &&
+        showImage &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-3 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Imagen ampliada"
             onClick={() => setLightboxOpen(false)}
-            aria-label="Cerrar imagen"
           >
-            Cerrar
-          </button>
-          <img
-            src={imageSrc}
-            alt="Imagen ampliada de la publicación"
-            className="max-h-[min(92vh,900px)] max-w-[min(96vw,1100px)] object-contain"
-            onClick={(event) => event.stopPropagation()}
-          />
-        </div>
-      )}
+            <button
+              type="button"
+              className="absolute right-3 top-3 z-[101] rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white hover:bg-white/20 sm:right-5 sm:top-5"
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Cerrar imagen"
+            >
+              Cerrar
+            </button>
+            <img
+              src={imageSrc}
+              alt="Imagen ampliada de la publicación"
+              className="h-auto max-h-[90vh] w-auto max-w-[96vw] object-contain shadow-2xl"
+              onClick={(event) => event.stopPropagation()}
+            />
+          </div>,
+          document.body,
+        )}
 
       <div className="sp-divider pt-3 mt-1 flex flex-wrap gap-3">
         <button
