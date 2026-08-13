@@ -4,7 +4,13 @@ import { colors } from '@/src/theme/tokens'
 
 function TabIcon({ label, focused }) {
   return (
-    <Text style={{ color: focused ? colors.pink : colors.inkMuted, fontSize: 11, fontWeight: '700' }}>
+    <Text
+      style={{
+        color: focused ? colors.pink : colors.inkMuted,
+        fontSize: 11,
+        fontWeight: '700',
+      }}
+    >
       {label}
     </Text>
   )
@@ -30,22 +36,38 @@ export default function AppTabsLayout() {
         name="feed"
         options={{
           title: 'Feed',
-          tabBarIcon: ({ focused }) => <TabIcon label="⌂" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Inicio" focused={focused} />
+          ),
         }}
       />
+
       <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Buscar',
+          tabBarIcon: ({ focused }) => <TabIcon label="Buscar" focused={focused} />,
+       }}
+      />     
+
+    <Tabs.Screen
         name="compose"
         options={{
           title: 'Crear',
-          tabBarIcon: ({ focused }) => <TabIcon label="＋" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Crear" focused={focused} />
+          ),
         }}
       />
+
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
           headerShown: false,
-          tabBarIcon: ({ focused }) => <TabIcon label="☺" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Perfil" focused={focused} />
+          ),
         }}
       />
     </Tabs>
