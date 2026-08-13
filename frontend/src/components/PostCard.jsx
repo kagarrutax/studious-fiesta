@@ -27,6 +27,7 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
   const [likePop, setLikePop] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(post.content)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const isOwner = user?.id === post.author.id
 
@@ -36,6 +37,20 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
   useEffect(() => {
     setImageBroken(false)
   }, [post.id, post.image_url])
+
+  useEffect(() => {
+    if (!lightboxOpen) return undefined
+    function onKey(event) {
+      if (event.key === 'Escape') setLightboxOpen(false)
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [lightboxOpen])
 
   const pinClass = cycleClass(PIN_COLORS, index)
   const rotateClass = cycleClass(ROTATIONS, index)
@@ -202,12 +217,42 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
       )}
 
       {showImage && !isEditing && (
-        <div className="mb-3 h-80 w-full overflow-hidden rounded-md bg-sp-bg sm:h-96">
+        <button
+          type="button"
+          className="mb-3 block h-80 w-full cursor-zoom-in overflow-hidden rounded-md border-0 bg-sp-bg p-0 sm:h-96"
+          onClick={() => setLightboxOpen(true)}
+          aria-label="Ver imagen completa"
+        >
           <img
-            className="h-full w-full object-cover object-center"
+            className="pointer-events-none h-full w-full object-cover object-center"
             src={imageSrc}
             alt="Adjunto de la publicación"
             onError={() => setImageBroken(true)}
+          />
+        </button>
+      )}
+
+      {lightboxOpen && showImage && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#0b1210]/92 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Imagen ampliada"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 rounded-md bg-sp-surface-raised px-3 py-2 text-sm font-semibold text-sp-ink"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Cerrar imagen"
+          >
+            Cerrar
+          </button>
+          <img
+            src={imageSrc}
+            alt="Imagen ampliada de la publicación"
+            className="max-h-[min(92vh,900px)] max-w-[min(96vw,1100px)] object-contain"
+            onClick={(event) => event.stopPropagation()}
           />
         </div>
       )}

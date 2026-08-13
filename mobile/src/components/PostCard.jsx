@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -37,6 +38,7 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
   const [imageBroken, setImageBroken] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(post.content)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const isOwner = Boolean(user?.id && post.author?.id === user.id)
   const imageSrc = mediaUrl(post.image_url)
@@ -195,13 +197,33 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
       )}
 
       {showImage && !isEditing && (
-        <Image
-          source={{ uri: imageSrc }}
-          style={styles.image}
-          resizeMode="cover"
-          onError={() => setImageBroken(true)}
-        />
+        <Pressable onPress={() => setLightboxOpen(true)} accessibilityLabel="Ver imagen completa">
+          <Image
+            source={{ uri: imageSrc }}
+            style={styles.image}
+            resizeMode="cover"
+            onError={() => setImageBroken(true)}
+          />
+        </Pressable>
       )}
+
+      <Modal
+        visible={lightboxOpen && showImage}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLightboxOpen(false)}
+      >
+        <Pressable style={styles.lightbox} onPress={() => setLightboxOpen(false)}>
+          <Pressable style={styles.lightboxClose} onPress={() => setLightboxOpen(false)}>
+            <Text style={styles.lightboxCloseText}>Cerrar</Text>
+          </Pressable>
+          <Image
+            source={{ uri: imageSrc }}
+            style={styles.lightboxImage}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </Modal>
 
       <View style={styles.actions}>
         <Pressable onPress={toggleLike} disabled={busy} style={styles.actionBtn}>
@@ -300,6 +322,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: colors.bg,
   },
+  lightbox: {
+    flex: 1,
+    backgroundColor: 'rgba(8, 14, 12, 0.94)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  lightboxImage: {
+    width: '100%',
+    height: '86%',
+  },
+  lightboxClose: {
+    position: 'absolute',
+    top: 48,
+    right: 20,
+    zIndex: 2,
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  lightboxCloseText: { color: colors.ink, fontWeight: '700', fontSize: 13 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingTop: 8 },
   actionBtn: { paddingVertical: 4 },
   actionLabel: { color: colors.inkMuted, fontSize: 13, fontWeight: '600' },
