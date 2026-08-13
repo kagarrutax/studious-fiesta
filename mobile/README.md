@@ -86,7 +86,15 @@ Proyecto EAS: https://expo.dev/accounts/kagarrutax/projects/studious-party
 
 Cuando termine, Expo muestra un enlace para descargar el APK. En el teléfono hay que permitir instalar apps de orígenes desconocidos.
 
+**Play Protect / “virus”:** no es malware. Android marca casi cualquier APK fuera de Play Store.
+Si aparece el aviso: *Más detalles* → *Instalar de todos modos*. Después puedes escanear la app
+en Play Protect. Para evitar el aviso, usa **Expo Go** desde Play Store y `npm start` en `mobile/`.
+
 No hace falta Android Studio ni Play Store. El perfil `preview` genera **APK** (instalación directa). El perfil `production` genera **AAB** (solo para la tienda).
+
+### Permisos del APK
+
+Solo fotos (`READ_MEDIA_IMAGES`) para publicar imágenes. Micrófono, cámara y ubicación están bloqueados a propósito para reducir falsos positivos de antivirus.
 
 ## Nota sobre Render
 

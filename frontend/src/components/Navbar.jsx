@@ -44,10 +44,16 @@ export default function Navbar() {
           className="flex items-center gap-2 no-underline text-sp-ink hover:no-underline"
           onClick={() => setOpen(false)}
         >
-          <span className="text-sp-yellow text-xl leading-none" aria-hidden="true">
-            ✺
+          <img
+            src="/logo.png"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 rounded-full border border-sp-yellow/40 object-cover"
+          />
+          <span className="font-display font-extrabold text-lg tracking-tight">
+            Studious <span className="text-sp-yellow">Party</span>
           </span>
-          <span className="font-display font-extrabold text-lg tracking-tight">Studious Party</span>
         </Link>
 
         <button
@@ -133,7 +139,7 @@ export default function Navbar() {
                   >
                     Avisos
                     {toast.unread > 0 && (
-                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-pink px-1 font-mono text-[10px] text-[#1B1220]">
+                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-pink px-1 font-mono text-[10px] text-[#0F2D23]">
                         {toast.unread}
                       </span>
                     )}

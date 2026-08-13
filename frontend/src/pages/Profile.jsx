@@ -213,7 +213,7 @@ export default function Profile() {
             )}
             <span className="sp-pin sp-pin-yellow !left-auto right-1 top-1" aria-hidden="true" />
             {isOwnProfile && (
-              <label className="absolute -bottom-2 left-1/2 -translate-x-1/2 cursor-pointer rounded-pin bg-sp-pink px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[#1B1220]">
+              <label className="absolute -bottom-2 left-1/2 -translate-x-1/2 cursor-pointer rounded-pin bg-sp-pink px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[#0F2D23]">
                 Foto
                 <input
                   type="file"

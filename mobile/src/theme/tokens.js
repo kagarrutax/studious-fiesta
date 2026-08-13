@@ -1,16 +1,16 @@
 export const colors = {
-  bg: '#0f1419',
-  surface: '#1a2332',
-  surfaceRaised: '#243044',
-  ink: '#f0f4f8',
-  inkMuted: '#9aa8b8',
-  inkFaint: '#6b7a8c',
-  pink: '#ff4d8d',
-  cyan: '#3dfff3',
-  yellow: '#ffe566',
-  border: '#2a3a4d',
-  error: '#ff6b6b',
-  success: '#5eead4',
+  bg: '#0F2D23',
+  surface: '#16382C',
+  surfaceRaised: '#1E5A43',
+  ink: '#FFF8E1',
+  inkMuted: '#B8CFC0',
+  inkFaint: '#7A9A88',
+  pink: '#FFC107',
+  cyan: '#8FD19E',
+  yellow: '#FFD54A',
+  border: '#2A4F3F',
+  error: '#FF6B6B',
+  success: '#8FD19E',
 }
 
 export function initials(name = '?') {

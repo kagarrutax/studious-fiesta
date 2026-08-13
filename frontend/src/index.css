@@ -116,7 +116,7 @@
   }
 
   .sp-btn-primary {
-    @apply sp-btn bg-sp-pink text-[#1B1220];
+    @apply sp-btn bg-sp-pink text-[#0F2D23];
   }
 
   .sp-btn-primary[aria-busy='true'] {
