@@ -84,7 +84,14 @@ O: `npm run build:apk`
 
 Proyecto EAS: https://expo.dev/accounts/kagarrutax/projects/studious-party
 
+Preview actual (v1.1.1, versionCode 6):
+https://expo.dev/artifacts/eas/q53dBkvV0LWrVOBXhsDhYP4lr_2nWaJ_k_8BDwE4VKQ.apk
+
+Build: https://expo.dev/accounts/kagarrutax/projects/studious-party/builds/f405cc7f-b85f-475f-8a7f-68f6764b0d3d
+
 Cuando termine, Expo muestra un enlace para descargar el APK. En el teléfono hay que permitir instalar apps de orígenes desconocidos.
+
+**Actualizar al abrir:** los APK nativos consultan `GET /api/mobile/version`. Si `version_code` remoto es mayor, aparece un modal con **Actualizar** (abre el APK) y **Más tarde** (salvo `mandatory=true`). No se muestra en Expo Go ni en `expo start`.
 
 **Play Protect / “virus”:** no es malware. Android marca casi cualquier APK fuera de Play Store.
 Si aparece el aviso: *Más detalles* → *Instalar de todos modos*. Después puedes escanear la app

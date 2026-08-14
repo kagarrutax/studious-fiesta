@@ -709,7 +709,7 @@ Estados obligatorios en cada lista: **loading**, **empty**, **error**, **success
 
 # 9. Espejo móvil (Expo)
 
-No bloquear web. Paridad sugerida:
+Paridad v1.1.0 (APK preview versionCode 5) — **hecho**:
 
 | Tras fase web | Móvil |
 |---------------|-------|
@@ -718,6 +718,7 @@ No bloquear web. Paridad sugerida:
 | 5–6 | Recursos / Eventos (lista) |
 | 7–8 | Mensajes **tiempo real** + buzón/notifs **tiempo real** |
 | 10–11 | XP en perfil + search types |
+| Extra | Modal **Actualizar** al abrir APK (`GET /api/mobile/version`) |
 
 Rebuild APK (`eas build --profile preview`) al cerrar cada bloque móvil visible para demos.
 

@@ -5,12 +5,13 @@ import {
   Image,
   Modal,
   Pressable,
+  Share,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
 import { apiErrorMessage } from '../utils/errors'
@@ -30,6 +31,7 @@ function formatDate(value) {
 
 export default function PostCard({ post, onUpdated, onDeleted }) {
   const { user } = useAuth()
+  const router = useRouter()
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState(null)
   const [showComments, setShowComments] = useState(false)
@@ -65,6 +67,57 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
     } finally {
       setBusy(false)
     }
+  }
+
+  async function toggleSave() {
+    setBusy(true)
+    setError('')
+    try {
+      const request = post.saved_by_me
+        ? api.delete(`/api/posts/${post.id}/save`)
+        : api.post(`/api/posts/${post.id}/save`)
+      const { data } = await request
+      onUpdated?.({ ...post, saved_by_me: data.saved })
+    } catch (err) {
+      setError(apiErrorMessage(err, 'No se pudo guardar'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function sharePost() {
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = await api.post(`/api/posts/${post.id}/share`)
+      onUpdated?.({ ...post, shares_count: data.shares_count })
+      await Share.share({ message: `${post.content}\n\nStudious Party` })
+    } catch (err) {
+      setError(apiErrorMessage(err, 'No se pudo compartir'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function confirmReport() {
+    Alert.alert('Reportar publicación', '¿Enviar este contenido para revisión?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Reportar',
+        style: 'destructive',
+        onPress: async () => {
+          setBusy(true)
+          try {
+            await api.post(`/api/posts/${post.id}/report`, { reason: 'Contenido inapropiado' })
+            onUpdated?.({ ...post, reported_by_me: true })
+          } catch (err) {
+            setError(apiErrorMessage(err, 'No se pudo reportar'))
+          } finally {
+            setBusy(false)
+          }
+        },
+      },
+    ])
   }
 
   async function loadComments() {
@@ -193,7 +246,21 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
           </View>
         </View>
       ) : (
-        <Text style={styles.content}>{post.content}</Text>
+        <>
+          <Text style={styles.content}>{post.content}</Text>
+          {post.hashtags?.length ? (
+            <View style={styles.hashtags}>
+              {post.hashtags.map((tag) => (
+                <Pressable
+                  key={tag}
+                  onPress={() => router.push(`/(app)/search?q=${encodeURIComponent(tag)}`)}
+                >
+                  <Text style={styles.hashtag}>#{tag}</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+        </>
       )}
 
       {showImage && !isEditing && (
@@ -236,6 +303,21 @@ export default function PostCard({ post, onUpdated, onDeleted }) {
             {post.comments_count ?? 0} Comentarios
           </Text>
         </Pressable>
+        <Pressable onPress={toggleSave} disabled={busy} style={styles.actionBtn}>
+          <Text style={[styles.actionLabel, post.saved_by_me && styles.saved]}>
+            {post.saved_by_me ? '★ Guardado' : '☆ Guardar'}
+          </Text>
+        </Pressable>
+        <Pressable onPress={sharePost} disabled={busy} style={styles.actionBtn}>
+          <Text style={styles.actionLabel}>↗ {post.shares_count ?? 0}</Text>
+        </Pressable>
+        {!isOwner ? (
+          <Pressable onPress={confirmReport} disabled={busy || post.reported_by_me} style={styles.actionBtn}>
+            <Text style={[styles.actionLabel, post.reported_by_me && styles.reported]}>
+              {post.reported_by_me ? 'Reportado' : 'Reportar'}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -301,6 +383,8 @@ const styles = StyleSheet.create({
   editLink: { color: colors.cyan, fontSize: 12, fontWeight: '700' },
   deleteLink: { color: colors.pink, fontSize: 12, fontWeight: '700' },
   content: { color: colors.ink, fontSize: 15, lineHeight: 22, marginBottom: 10 },
+  hashtags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
+  hashtag: { color: colors.cyan, fontSize: 12, fontWeight: '700' },
   editBox: { marginBottom: 10 },
   textarea: {
     minHeight: 90,
@@ -348,6 +432,8 @@ const styles = StyleSheet.create({
   actionBtn: { paddingVertical: 4 },
   actionLabel: { color: colors.inkMuted, fontSize: 13, fontWeight: '600' },
   liked: { color: colors.pink },
+  saved: { color: colors.yellow },
+  reported: { color: colors.error },
   error: { color: colors.error, marginTop: 8, fontSize: 13 },
   comments: { marginTop: 12, gap: 8 },
   commentLine: { color: colors.inkMuted, fontSize: 13, lineHeight: 18 },

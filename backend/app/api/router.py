@@ -7,6 +7,7 @@ from app.api.feed import router as feed_router
 from app.api.follows import router as follows_router
 from app.api.media import router as media_router
 from app.api.messages import router as messages_router
+from app.api.mobile import router as mobile_router
 from app.api.notifications import router as notifications_router
 from app.api.posts import router as posts_router
 from app.api.resources import router as resources_router
@@ -16,6 +17,7 @@ from app.api.users import router as users_router
 from app.api.search import router as search_router
 
 router = APIRouter()
+router.include_router(mobile_router)
 router.include_router(auth_router)
 router.include_router(media_router)
 router.include_router(feed_router)
