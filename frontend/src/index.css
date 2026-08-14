@@ -128,6 +128,16 @@
     @apply sp-btn bg-transparent border border-strong text-sp-ink hover:border-sp-cyan;
   }
 
+  .sp-back {
+    @apply inline-flex items-center gap-2 rounded-md border border-dashed border-strong
+      bg-sp-surface/80 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide
+      text-sp-cyan no-underline transition duration-200
+      hover:border-sp-cyan hover:bg-sp-surface-raised hover:text-sp-ink
+      active:translate-y-px
+      motion-reduce:transition-none;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   .sp-container {
     @apply w-full max-w-[640px] mx-auto px-4;
   }

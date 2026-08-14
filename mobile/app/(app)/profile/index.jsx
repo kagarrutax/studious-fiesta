@@ -35,11 +35,11 @@ export default function MyProfileScreen() {
     try {
       const [meRes, postsRes, followersRes] = await Promise.all([
         api.get(`/api/users/${user.id}`),
-        api.get('/api/posts'),
+        api.get('/api/posts', { params: { author_id: user.id, limit: 50 } }),
         api.get(`/api/users/${user.id}/followers`),
       ])
       setProfile(meRes.data)
-      setPosts(postsRes.data.filter((p) => String(p.author_id) === String(user.id)))
+      setPosts(postsRes.data.items || [])
       setFollowers(followersRes.data || [])
     } catch (err) {
       setError(apiErrorMessage(err, 'No se pudo cargar el perfil'))

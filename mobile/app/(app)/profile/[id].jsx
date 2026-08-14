@@ -38,11 +38,11 @@ export default function UserProfileScreen() {
     try {
       const [userRes, postsRes, followersRes] = await Promise.all([
         api.get(`/api/users/${id}`),
-        api.get('/api/posts'),
+        api.get('/api/posts', { params: { author_id: id, limit: 50 } }),
         api.get(`/api/users/${id}/followers`),
       ])
       setProfile(userRes.data)
-      setPosts(postsRes.data.filter((p) => String(p.author_id) === String(id)))
+      setPosts(postsRes.data.items || [])
       setFollowers(followersRes.data || [])
     } catch (err) {
       setError(apiErrorMessage(err, 'Perfil no disponible'))

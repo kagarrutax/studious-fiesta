@@ -32,3 +32,10 @@ def test_stats_include_recent_activity(client) -> None:
     assert data["recent_posts"][0]["content"] == "Post reciente"
     assert isinstance(data["recent_users"], list)
     assert any(u["username"] == "erin" for u in data["recent_users"])
+    assert "me" in data
+    assert data["me"]["posts"] >= 1
+    assert data["me"]["followers"] == 0
+    assert "password_hash" not in data
+    assert isinstance(data.get("recent_notifications"), list)
+    assert isinstance(data.get("my_communities"), list)
+    assert isinstance(data.get("upcoming_events"), list)

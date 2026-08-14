@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -6,8 +7,31 @@ from app.api.deps import get_current_user
 from app.db import get_db
 from app.models import Follow, Post, User
 from app.schemas import UserProfile
+from app.schemas.post import BadgeBrief
+from app.services.realtime import realtime_manager
+from app.services.xp import list_user_badges
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+
+class OnlineUserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    username: str
+    avatar_url: str | None = None
+
+
+@router.get("/online", response_model=list[OnlineUserOut])
+def list_online_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[OnlineUserOut]:
+    ids = [uid for uid in realtime_manager.online_user_ids() if uid != current_user.id]
+    if not ids:
+        return []
+    rows = db.scalars(select(User).where(User.id.in_(ids)).order_by(User.username.asc())).all()
+    return [OnlineUserOut.model_validate(u) for u in rows]
 
 
 @router.get("/{user_id}", response_model=UserProfile)
@@ -29,15 +53,26 @@ def get_user_profile(
         )
         is not None
     )
+    badges = [
+        BadgeBrief(code=b["code"], name=b["name"], description=b["description"])
+        for b in list_user_badges(db, user_id)
+    ]
 
     return UserProfile(
         id=user.id,
         username=user.username,
         avatar_url=user.avatar_url,
+        cover_url=user.cover_url,
         bio=user.bio,
+        career=user.career,
+        university=user.university,
+        semester=user.semester,
         created_at=user.created_at,
         posts_count=posts_count,
         followers_count=followers_count,
         following_count=following_count,
         is_following=is_following,
+        xp=int(user.xp or 0),
+        level=int(user.level or 1),
+        badges=badges,
     )

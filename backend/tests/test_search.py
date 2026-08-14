@@ -70,10 +70,58 @@ def test_search_endpoint(client) -> None:
     # 7. Estructura de respuesta
     assert "users" in data
     assert "posts" in data
+    assert "communities" in data
+    assert "events" in data
+    assert "resources" in data
 
 
 def test_search_no_auth(client) -> None:
     res = client.get("/api/search?q=test")
     assert res.status_code == 401
     assert res.json()["detail"] == "No autenticado"
+
+
+def test_search_types_communities_events_resources(client) -> None:
+    headers = auth_header(client)
+    from datetime import datetime, timedelta, timezone
+    from io import BytesIO
+
+    client.post(
+        "/api/communities",
+        headers=headers,
+        json={"name": "Club Cálculo", "description": "Grupo de estudio"},
+    )
+    client.post(
+        "/api/events",
+        headers=headers,
+        json={
+            "title": "Feria de cálculo",
+            "starts_at": (datetime.now(timezone.utc) + timedelta(days=3)).isoformat(),
+            "location": "Aula 1",
+        },
+    )
+    files = {"file": ("a.pdf", BytesIO(b"%PDF-1.4\n%%EOF\n"), "application/pdf")}
+    client.post(
+        "/api/resources",
+        headers=headers,
+        data={"title": "Guía de cálculo", "category": "notes"},
+        files=files,
+    )
+
+    comm = client.get("/api/search?q=cálculo&type=communities", headers=headers)
+    assert comm.status_code == 200
+    assert len(comm.json()["communities"]) >= 1
+    assert comm.json()["users"] == []
+    assert comm.json()["posts"] == []
+
+    ev = client.get("/api/search?q=feria&type=events", headers=headers)
+    assert ev.status_code == 200
+    assert len(ev.json()["events"]) >= 1
+
+    res = client.get("/api/search?q=guía&type=resources", headers=headers)
+    assert res.status_code == 200
+    assert len(res.json()["resources"]) >= 1
+
+    bad = client.get("/api/search?q=x&type=nopes", headers=headers)
+    assert bad.status_code == 422
 

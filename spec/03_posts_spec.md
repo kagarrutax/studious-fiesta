@@ -1,43 +1,48 @@
 # Posts Spec
 
 ## Objetivo
-Permitir a los usuarios crear y visualizar publicaciones en la plataforma.
+Permitir crear, editar, eliminar y visualizar publicaciones (texto e imagen).
 
 ## Estado actual
-Implementado. Rutas de backend para crear, subir imagen y obtener post por ID.
+Implementado.
+
+- Crear JSON `POST /api/posts` y con imagen `POST /api/posts/upload`
+- Obtener `GET /api/posts/{id}`
+- Editar `PATCH|PUT /api/posts/{id}` (solo autor)
+- Eliminar `DELETE /api/posts/{id}` (solo autor)
+- Likes y comentarios en el mismo router
+- Hashtags sincronizados al crear/editar
 
 ## Alcance
 - Creación de publicaciones de texto.
-- Adjuntar imágenes a publicaciones (`/api/posts/upload`).
-- Visualización individual de una publicación (`/api/posts/{id}`).
+- Adjuntar imágenes (`/api/posts/upload` → `stored_media`).
+- Edición y borrado por el autor.
+- Visualización individual.
 
 ## Fuera de alcance
-- Edición de publicaciones.
-- Borrado de publicaciones.
-- Soporte para videos o múltiples imágenes.
+- Videos o múltiples imágenes por post.
+- Edición/borrado de comentarios.
 
 ## Archivos involucrados
-- `backend/app/routers/posts.py`
-- `frontend/src/components/PostForm.jsx` (o similar)
-
-## Pasos
-1. Recibir datos del post (texto/imagen).
-2. Asociar post al usuario autenticado.
-3. Guardar en base de datos.
-4. Retornar datos del nuevo post.
+- `backend/app/api/posts.py`
+- `backend/app/schemas/post.py`
+- `frontend/src/pages/Feed.jsx`
+- `frontend/src/components/PostCard.jsx`
+- `backend/tests/test_posts.py`
 
 ## Criterios de aceptación
-- Usuarios autenticados pueden crear posts.
-- Los posts creados son visibles con el nombre del autor.
+- [x] Usuarios autenticados pueden crear posts.
+- [x] Posts visibles con nombre del autor.
+- [x] Solo el autor edita/borra.
+- [x] Hashtags se extraen del contenido.
 
 ## Testing
-- Pruebas de creación de post con token válido.
-- Pruebas de subida de archivos (mockeado o temporal).
+- `pytest tests/test_posts.py`
 
 ## Seguridad
-- Validar tamaño y tipo de archivo en `/upload`.
-- Requerir JWT válido para creación.
+- JWT obligatorio.
+- Validar tipo/tamaño de upload.
+- 403 si otro usuario edita/borra.
 
 ## Riesgos
-- Inyección de contenido malicioso.
-- Almacenamiento local de archivos sin control de capacidad (`/uploads`).
+- Disco efímero en Render para uploads locales (mitigado parcialmente con `stored_media`).
