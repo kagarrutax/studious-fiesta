@@ -99,12 +99,18 @@ export default function MyProfileScreen() {
   }
 
   async function changeImage(kind) {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      quality: 0.82,
-      aspect: kind === 'cover' ? [16, 6] : [1, 1],
-    })
+    let result
+    try {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.82,
+        aspect: kind === 'cover' ? [16, 6] : [1, 1],
+      })
+    } catch (err) {
+      Alert.alert('No se pudo abrir la galería', apiErrorMessage(err, 'Intenta de nuevo'))
+      return
+    }
     if (result.canceled) return
     const asset = result.assets[0]
     const formData = new FormData()

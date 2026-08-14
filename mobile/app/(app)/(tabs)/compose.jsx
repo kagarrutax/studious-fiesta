@@ -28,28 +28,35 @@ export default function ComposeScreen() {
 
   async function pickImage() {
     setError('')
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (!permission.granted) {
-      setError('Necesitamos permiso para acceder a la galería')
-      return
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.85,
-    })
-    if (result.canceled || !result.assets?.[0]) return
+    try {
+      // Android abre el selector del sistema y no requiere permisos de galería.
+      if (Platform.OS !== 'android') {
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        if (!permission.granted) {
+          setError('Necesitamos permiso para acceder a la galería')
+          return
+        }
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 0.85,
+      })
+      if (result.canceled || !result.assets?.[0]) return
 
-    const asset = result.assets[0]
-    const manipulated = await ImageManipulator.manipulateAsync(
-      asset.uri,
-      [{ resize: { width: 1280 } }],
-      { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
-    )
-    setImage({
-      uri: manipulated.uri,
-      name: `upload-${Date.now()}.jpg`,
-      type: 'image/jpeg',
-    })
+      const asset = result.assets[0]
+      const manipulated = await ImageManipulator.manipulateAsync(
+        asset.uri,
+        [{ resize: { width: 1280 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
+      )
+      setImage({
+        uri: manipulated.uri,
+        name: `upload-${Date.now()}.jpg`,
+        type: 'image/jpeg',
+      })
+    } catch (err) {
+      setError(apiErrorMessage(err, 'No se pudo abrir la galería'))
+    }
   }
 
   async function publish() {

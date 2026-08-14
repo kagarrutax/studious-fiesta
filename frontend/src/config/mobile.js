@@ -1,6 +1,6 @@
-/** APK interno EAS preview v1.1.2 (versionCode 7). */
+/** APK interno EAS preview v1.1.3 (versionCode 8). */
 export const ANDROID_APK_URL =
-  'https://expo.dev/artifacts/eas/yqDmnIpdvskkym9_TvSQpNSwKaeASsVDxa238jzrtc0.apk'
+  'https://expo.dev/artifacts/eas/fbehthKeac8fZXvAD6LAhW6rHwjcTQEd4u9kECSqUcg.apk'
 
 export const ANDROID_BUILD_PAGE =
-  'https://expo.dev/accounts/kagarrutax/projects/studious-party/builds/c2cb200f-656c-4a11-bcc5-530e720c6df1'
+  'https://expo.dev/accounts/kagarrutax/projects/studious-party/builds/1556544c-7628-4079-9f26-e5d8f4c72668'
