@@ -3,6 +3,9 @@ import { useEffect } from 'react'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { AuthProvider, useAuth } from '@/src/context/AuthContext'
+import { ChatProvider } from '@/src/context/ChatContext'
+import { NotificationsProvider } from '@/src/context/NotificationsContext'
+import UpdatePrompt from '@/src/components/UpdatePrompt'
 import { colors } from '@/src/theme/tokens'
 
 export { ErrorBoundary } from 'expo-router'
@@ -39,12 +42,17 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="light" />
-      <AuthGate>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(app)" />
-        </Stack>
-      </AuthGate>
+      <UpdatePrompt />
+      <ChatProvider>
+        <NotificationsProvider>
+          <AuthGate>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(app)" />
+            </Stack>
+          </AuthGate>
+        </NotificationsProvider>
+      </ChatProvider>
     </AuthProvider>
   )
 }

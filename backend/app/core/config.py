@@ -15,6 +15,13 @@ class Settings(BaseSettings):
     rate_limit_register_per_minute: int = 10
     rate_limit_upload_per_minute: int = 30
     rate_limit_message_per_minute: int = 60
+    mobile_latest_version: str = "1.1.1"
+    mobile_latest_version_code: int = 6
+    mobile_apk_url: str = (
+        "https://expo.dev/artifacts/eas/"
+        "q53dBkvV0LWrVOBXhsDhYP4lr_2nWaJ_k_8BDwE4VKQ.apk"
+    )
+    mobile_update_mandatory: bool = False
 
     @property
     def cors_origins_list(self) -> list[str]:

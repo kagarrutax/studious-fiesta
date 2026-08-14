@@ -2,11 +2,14 @@ import { Tabs } from 'expo-router'
 import { Platform, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors } from '@/src/theme/tokens'
+import { useChat } from '@/src/context/ChatContext'
+import { useNotifications } from '@/src/context/NotificationsContext'
 
 const ICONS = {
   feed: '⌂',
-  search: '⌕',
+  explore: '⌕',
   compose: '＋',
+  messages: '✉',
   profile: '☺',
 }
 
@@ -22,6 +25,8 @@ function TabGlyph({ name, focused }) {
 
 export default function AppTabsLayout() {
   const insets = useSafeAreaInsets()
+  const { unreadTotal } = useChat()
+  const { unread: notificationsUnread } = useNotifications()
   const bottomPad = Math.max(insets.bottom, Platform.OS === 'android' ? 10 : 8)
 
   return (
@@ -54,10 +59,11 @@ export default function AppTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="explore"
         options={{
-          title: 'Buscar',
-          tabBarIcon: ({ focused }) => <TabGlyph name="search" focused={focused} />,
+          title: 'Explorar',
+          tabBarBadge: notificationsUnread > 0 ? notificationsUnread : undefined,
+          tabBarIcon: ({ focused }) => <TabGlyph name="explore" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -68,6 +74,15 @@ export default function AppTabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Mensajes',
+          headerShown: false,
+          tabBarBadge: unreadTotal > 0 ? unreadTotal : undefined,
+          tabBarIcon: ({ focused }) => <TabGlyph name="messages" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Perfil',
@@ -75,6 +90,12 @@ export default function AppTabsLayout() {
           tabBarIcon: ({ focused }) => <TabGlyph name="profile" focused={focused} />,
         }}
       />
+      <Tabs.Screen name="search" options={{ href: null }} />
+      <Tabs.Screen name="dashboard" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="communities" options={{ href: null }} />
+      <Tabs.Screen name="resources" options={{ href: null }} />
+      <Tabs.Screen name="events" options={{ href: null }} />
     </Tabs>
   )
 }
