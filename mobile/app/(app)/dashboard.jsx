@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import { Link, useFocusEffect } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 import ScreenHeader from '@/src/components/ScreenHeader'
 import { ErrorState, LoadingState } from '@/src/components/StatusBlocks'
 import api from '@/src/services/api'
@@ -46,26 +46,24 @@ function Section({ title, action, children }) {
 }
 
 function SectionLink({ href, children }) {
+  const router = useRouter()
   return (
-    <Link href={href} asChild>
-      <Pressable>
-        <Text style={styles.sectionLink}>{children}</Text>
-      </Pressable>
-    </Link>
+    <Pressable onPress={() => router.push(href)} hitSlop={8}>
+      <Text style={styles.sectionLink}>{children}</Text>
+    </Pressable>
   )
 }
 
 function ListLink({ href, title, meta }) {
+  const router = useRouter()
   return (
-    <Link href={href} asChild>
-      <Pressable style={styles.listRow}>
-        <View style={styles.listCopy}>
-          <Text style={styles.listTitle}>{title}</Text>
-          {meta ? <Text style={styles.listMeta}>{meta}</Text> : null}
-        </View>
-        <Text style={styles.chevron}>›</Text>
-      </Pressable>
-    </Link>
+    <Pressable style={styles.listRow} onPress={() => router.push(href)}>
+      <View style={styles.listCopy}>
+        <Text style={styles.listTitle}>{title}</Text>
+        {meta ? <Text style={styles.listMeta}>{meta}</Text> : null}
+      </View>
+      <Text style={styles.chevron}>›</Text>
+    </Pressable>
   )
 }
 
@@ -74,6 +72,7 @@ function Empty({ children }) {
 }
 
 export default function DashboardScreen() {
+  const router = useRouter()
   const { user } = useAuth()
   const [stats, setStats] = useState(null)
   const [leaderboard, setLeaderboard] = useState([])
@@ -218,10 +217,13 @@ export default function DashboardScreen() {
 
           <Section title="Ranking XP">
             {leaderboard.length ? (
-              leaderboard.map((entry, index) => (
-                <Link key={entry.id} href={`/(app)/profile/${entry.id}`} asChild>
+              leaderboard.map((entry, index) => {
+                const isCurrent = entry.id === user?.id
+                return (
                   <Pressable
-                    style={[styles.rankRow, entry.id === user?.id && styles.rankRowCurrent]}
+                    key={entry.id}
+                    onPress={() => router.push(`/(app)/profile/${entry.id}`)}
+                    style={isCurrent ? styles.rankRowCurrent : styles.rankRow}
                   >
                     <Text style={styles.rankNumber}>#{index + 1}</Text>
                     <View style={styles.rankAvatar}>
@@ -234,8 +236,8 @@ export default function DashboardScreen() {
                       Nv. {entry.level} · {entry.xp} XP
                     </Text>
                   </Pressable>
-                </Link>
-              ))
+                )
+              })
             ) : (
               <Empty>Aún no hay posiciones en el ranking.</Empty>
             )}
@@ -248,35 +250,7 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: 16, paddingBottom: 40 },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    backgroundColor: colors.bg,
-  },
-  loadingText: { color: colors.inkMuted },
-  title: { color: colors.ink, fontSize: 30, fontWeight: '900' },
-  subtitle: { color: colors.inkMuted, marginTop: 4, marginBottom: 20 },
-  errorBox: {
-    borderWidth: 1,
-    borderColor: colors.error,
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 18,
-  },
-  errorText: { color: colors.error },
-  retry: {
-    alignSelf: 'flex-start',
-    marginTop: 10,
-    backgroundColor: colors.surfaceRaised,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  retryText: { color: colors.cyan, fontWeight: '800' },
+  content: { padding: 16, paddingBottom: 40, maxWidth: 640, width: '100%', alignSelf: 'center' },
   xpCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -331,7 +305,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     paddingVertical: 11,
   },
-  listCopy: { flex: 1, paddingRight: 8 },
+  listCopy: { flex: 1, paddingRight: 8, minWidth: 0 },
   listTitle: { color: colors.ink, fontWeight: '700' },
   listMeta: { color: colors.inkMuted, fontSize: 12, marginTop: 4 },
   chevron: { color: colors.cyan, fontSize: 22 },
@@ -345,7 +319,17 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 4,
   },
-  rankRowCurrent: { backgroundColor: colors.surfaceRaised, borderRadius: 8 },
+  rankRowCurrent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingVertical: 9,
+    paddingHorizontal: 4,
+    backgroundColor: colors.surfaceRaised,
+    borderRadius: 8,
+  },
   rankNumber: { color: colors.inkFaint, fontSize: 11, width: 24 },
   rankAvatar: {
     width: 30,
@@ -356,6 +340,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   rankAvatarText: { color: colors.yellow, fontSize: 10, fontWeight: '800' },
-  rankName: { color: colors.ink, fontWeight: '700', flex: 1 },
+  rankName: { color: colors.ink, fontWeight: '700', flex: 1, minWidth: 0 },
   rankXp: { color: colors.cyan, fontSize: 11, fontWeight: '700' },
 })
