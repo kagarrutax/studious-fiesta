@@ -1,35 +1,41 @@
-# Dashboard Spec
+# Dashboard Spec — Fase 9 / Sprint S8
 
 ## Objetivo
-Proveer un resumen estadístico y panel de control para el usuario.
+Panel útil: métricas personales, actividad reciente, eventos, avisos y atajos.
 
 ## Estado actual
-Implementado. Ruta de backend `/api/stats` y vista en frontend.
+Implementado (globales + eventos). Pendiente: bloque personal coherente.
 
 ## Alcance
-- Mostrar estadísticas generales (número de posts, interacciones).
+- `GET /api/stats` con totales globales **y** `me` (posts, follows, comunidades, recursos, avisos no leídos).
+- Widgets: avisos recientes, mis comunidades, recursos recientes, próximos eventos.
+- Acceso desde menú perfil (`/dashboard`).
 
 ## Fuera de alcance
-- Gráficos avanzados o reportes exportables.
-- Administración global (rol de superadmin).
+- Gráficos exportables.
+- Superadmin.
+- Ranking XP (Fase 10).
 
 ## Archivos involucrados
-- `backend/app/routers/stats.py`
+- `backend/app/api/stats.py`
 - `frontend/src/pages/Dashboard.jsx`
-
-## Pasos
-1. Consultar conteos agregados en base de datos.
-2. Formatear como JSON.
-3. Mostrar en tarjetas resumen en frontend.
+- `backend/tests/test_stats.py`
 
 ## Criterios de aceptación
-- El dashboard carga correctamente con las cifras actualizadas de la cuenta o globales.
+- [x] El panel carga con JWT.
+- [x] `me` refleja datos del usuario autenticado, no de otros.
+- [x] Empty states si no hay eventos/comunidades/avisos.
+- [x] No se expone `password_hash`.
 
 ## Testing
-- Verificar que el endpoint `/stats` devuelve los campos requeridos con formato numérico.
+- `pytest tests/test_stats.py`
 
 ## Seguridad
-- Proteger endpoint con autenticación.
+- `Depends(get_current_user)`.
+- Stats personales solo del token.
 
 ## Riesgos
-- Consultas agregadas (COUNT) pueden ser lentas en tablas muy grandes sin indexación.
+- COUNT en tablas grandes; límites pequeños (5) en listados recientes.
+
+## Estado actual
+Implementado (Fase 9 / Sprint S8).

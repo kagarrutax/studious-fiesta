@@ -1,32 +1,49 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useChat } from '../context/ChatContext'
+import { useNotifications } from '../context/NotificationsContext'
 import { useToast } from '../context/ToastContext'
 import { TAB_ACTIVE, cycleClass, initials } from '../design/tokens'
+import { mediaUrl } from '../utils/media'
+
+const AUTH_LINKS = [
+  { to: '/feed', label: 'Feed' },
+  { to: '/communities', label: 'Comunidades' },
+  { to: '/resources', label: 'Recursos' },
+  { to: '/events', label: 'Eventos' },
+  { to: '/messages', label: 'Mensajes' },
+  { to: '/notifications', label: 'Avisos' },
+  { to: '/search', label: 'Buscar' },
+]
 
 export default function Navbar() {
   const { isAuthenticated, user, logout, loading } = useAuth()
   const toast = useToast()
+  const notices = useNotifications()
+  const chat = useChat()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const [noticesOpen, setNoticesOpen] = useState(false)
-  const noticesRef = useRef(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
 
   useEffect(() => {
-    if (!noticesOpen) return undefined
+    if (!menuOpen) return undefined
     function onPointerDown(event) {
-      if (noticesRef.current && !noticesRef.current.contains(event.target)) {
-        setNoticesOpen(false)
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false)
       }
     }
     document.addEventListener('mousedown', onPointerDown)
     return () => document.removeEventListener('mousedown', onPointerDown)
-  }, [noticesOpen])
+  }, [menuOpen])
 
   function handleLogout() {
     logout()
     setOpen(false)
-    setNoticesOpen(false)
+    setMenuOpen(false)
     toast.info('Sesión cerrada')
+    navigate('/')
   }
 
   function linkClass(index, isActive) {
@@ -35,6 +52,8 @@ export default function Navbar() {
     if (!isActive) return base
     return `${base} text-sp-ink ${cycleClass(TAB_ACTIVE, index)}`
   }
+
+  const avatarSrc = mediaUrl(user?.avatar_url)
 
   return (
     <header className="sticky top-0 z-40 bg-sp-surface border-b border-dashed border-strong">
@@ -69,7 +88,7 @@ export default function Navbar() {
         <nav
           id="site-menu"
           className={`${open ? 'flex' : 'hidden'} md:flex absolute md:static left-0 right-0 top-full md:top-auto
-            flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4
+            flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3
             bg-sp-surface md:bg-transparent border-b md:border-0 border-dashed border-strong
             px-4 py-3 md:p-0`}
         >
@@ -86,94 +105,88 @@ export default function Navbar() {
             <span className="sp-meta">Cargando…</span>
           ) : isAuthenticated ? (
             <>
-              <NavLink
-                to="/feed"
-                className={({ isActive }) => linkClass(1, isActive)}
-                onClick={() => setOpen(false)}
-              >
-                Feed
-              </NavLink>
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) => linkClass(2, isActive)}
-                onClick={() => setOpen(false)}
-              >
-                Panel
-              </NavLink>
-              <NavLink
-                to="/search"
-                className={({ isActive }) => linkClass(3, isActive)}
-                onClick={() => setOpen(false)}
-              >
-                Buscar
-              </NavLink>
-              {user && (
+              {AUTH_LINKS.map((item, index) => (
                 <NavLink
-                  to={`/users/${user.id}`}
-                  className={({ isActive }) => linkClass(0, isActive)}
-                  onClick={() => setOpen(false)}
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => linkClass(index + 1, isActive)}
+                  onClick={() => {
+                    setOpen(false)
+                    if (item.to === '/notifications') notices.markAllRead()
+                  }}
                 >
-                  Perfil
-                </NavLink>
-              )}
-              {user && (
-                <div className="flex items-center gap-2 rounded-pin bg-sp-surface-raised px-3 py-1.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sp-bg text-xs font-semibold text-sp-yellow">
-                    {initials(user.username)}
-                  </span>
-                  <span className="sp-meta !text-sp-ink-muted !normal-case tracking-normal">
-                    @{user.username}
-                  </span>
-                </div>
-              )}
-              {user && (
-                <div className="relative" ref={noticesRef}>
-                  <button
-                    type="button"
-                    className="relative sp-btn-ghost px-3 py-2 text-xs"
-                    aria-expanded={noticesOpen}
-                    onClick={() => {
-                      setNoticesOpen((v) => !v)
-                      toast.markNoticesRead()
-                    }}
-                  >
-                    Avisos
-                    {toast.unread > 0 && (
-                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-pink px-1 font-mono text-[10px] text-[#0F2D23]">
-                        {toast.unread}
+                  <span className="relative inline-flex items-center gap-1">
+                    {item.label}
+                    {item.to === '/notifications' && notices.unread > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-pink px-1 font-mono text-[10px] text-[#0F2D23]">
+                        {notices.unread > 9 ? '9+' : notices.unread}
                       </span>
                     )}
+                    {item.to === '/messages' && chat.unreadTotal > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sp-yellow px-1 font-mono text-[10px] text-[#0F2D23]">
+                        {chat.unreadTotal > 9 ? '9+' : chat.unreadTotal}
+                      </span>
+                    )}
+                  </span>
+                </NavLink>
+              ))}
+
+              {user && (
+                <div className="relative md:ml-1" ref={menuRef}>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-pin bg-sp-surface-raised px-2 py-1.5 border-0 cursor-pointer"
+                    aria-expanded={menuOpen}
+                    onClick={() => setMenuOpen((v) => !v)}
+                  >
+                    {avatarSrc ? (
+                      <img
+                        src={avatarSrc}
+                        alt=""
+                        className="h-7 w-7 rounded-full object-cover bg-sp-bg"
+                      />
+                    ) : (
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sp-bg text-xs font-semibold text-sp-yellow">
+                        {initials(user.username)}
+                      </span>
+                    )}
+                    <span className="sp-meta !text-sp-ink-muted !normal-case tracking-normal hidden sm:inline">
+                      @{user.username}
+                    </span>
                   </button>
-                  {noticesOpen && (
-                    <div className="absolute left-0 z-50 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-dashed border-strong bg-sp-surface-raised p-3 shadow-card md:left-auto md:right-0">
-                      <div className="mb-2 flex items-center justify-between">
-                        <p className="sp-meta mb-0">Centro de avisos</p>
-                        <button
-                          type="button"
-                          className="text-xs text-sp-cyan bg-transparent border-0 cursor-pointer"
-                          onClick={toast.clearNotices}
-                        >
-                          Limpiar
-                        </button>
-                      </div>
-                      {toast.notices.length === 0 ? (
-                        <p className="mb-0 text-sm text-sp-ink-muted">Sin avisos todavía.</p>
-                      ) : (
-                        <ul className="m-0 max-h-64 list-none space-y-2 overflow-y-auto p-0">
-                          {toast.notices.map((item) => (
-                            <li key={item.id} className="text-sm text-sp-ink">
-                              {item.message}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                  {menuOpen && (
+                    <div className="absolute left-0 z-50 mt-2 w-48 rounded-lg border border-dashed border-strong bg-sp-surface-raised p-2 shadow-card md:left-auto md:right-0">
+                      <Link
+                        to={`/users/${user.id}`}
+                        className="block rounded-md px-3 py-2 text-sm text-sp-ink no-underline hover:bg-sp-surface"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          setOpen(false)
+                        }}
+                      >
+                        Perfil
+                      </Link>
+                      <Link
+                        to="/dashboard"
+                        className="block rounded-md px-3 py-2 text-sm text-sp-ink no-underline hover:bg-sp-surface"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          setOpen(false)
+                        }}
+                      >
+                        Panel
+                      </Link>
+                      <button
+                        type="button"
+                        className="w-full rounded-md px-3 py-2 text-left text-sm text-sp-pink bg-transparent border-0 cursor-pointer hover:bg-sp-surface"
+                        onClick={handleLogout}
+                      >
+                        Cerrar sesión
+                      </button>
                     </div>
                   )}
                 </div>
               )}
-              <button type="button" className="sp-btn-ghost px-3 py-2 text-xs" onClick={handleLogout}>
-                Salir
-              </button>
             </>
           ) : (
             <>

@@ -28,10 +28,10 @@ export default function FeedScreen() {
     setError('')
     setWaking(false)
     try {
-      const { data } = await withApiRetry(() => api.get('/api/posts'), {
+      const { data } = await withApiRetry(() => api.get('/api/posts', { params: { limit: 30 } }), {
         onWake: () => setWaking(true),
       })
-      setPosts(data)
+      setPosts(data.items || [])
       setWaking(false)
     } catch (err) {
       setWaking(false)

@@ -63,6 +63,20 @@ def test_list_followers(client):
     assert followers[0]["username"] == "alice"
 
 
+def test_list_following(client):
+    headers_a = _register_and_login(client, "alice", "alice@test.com")
+    headers_b = _register_and_login(client, "bob", "bob@test.com")
+    bob_id = client.get("/api/auth/me", headers=headers_b).json()["id"]
+    alice_id = client.get("/api/auth/me", headers=headers_a).json()["id"]
+
+    client.post(f"/api/users/{bob_id}/follow", headers=headers_a)
+    res = client.get(f"/api/users/{alice_id}/following", headers=headers_a)
+    assert res.status_code == 200
+    following = res.json()
+    assert len(following) == 1
+    assert following[0]["username"] == "bob"
+
+
 def test_profile_includes_follow_data(client):
     headers_a = _register_and_login(client, "alice", "alice@test.com")
     headers_b = _register_and_login(client, "bob", "bob@test.com")

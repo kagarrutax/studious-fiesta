@@ -122,8 +122,8 @@ export default function Register() {
           </Link>
         </p>
         <p className="mt-3 mb-0 text-center">
-          <Link to="/" className="sp-meta text-sp-cyan hover:underline">
-            Volver al inicio
+          <Link to="/" className="sp-back">
+            ← Volver al inicio
           </Link>
         </p>
       </section>

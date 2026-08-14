@@ -31,7 +31,7 @@ def test_create_and_list_posts(client) -> None:
 
     feed = client.get("/api/posts", headers=headers)
     assert feed.status_code == 200
-    assert len(feed.json()) >= 1
+    assert len(feed.json()["items"]) >= 1
 
     detail = client.get(f"/api/posts/{body['id']}", headers=headers)
     assert detail.status_code == 200

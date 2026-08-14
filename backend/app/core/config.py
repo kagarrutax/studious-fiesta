@@ -10,6 +10,11 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     upload_dir: str = "uploads"
+    rate_limit_enabled: bool = True
+    rate_limit_login_per_minute: int = 20
+    rate_limit_register_per_minute: int = 10
+    rate_limit_upload_per_minute: int = 30
+    rate_limit_message_per_minute: int = 60
 
     @property
     def cors_origins_list(self) -> list[str]:

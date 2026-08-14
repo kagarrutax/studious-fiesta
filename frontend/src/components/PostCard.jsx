@@ -16,6 +16,29 @@ function formatDate(value) {
   })
 }
 
+function PostContent({ content }) {
+  const parts = String(content || '').split(/(#[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9_]{2,50})/gi)
+  return (
+    <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">
+      {parts.map((part, index) => {
+        if (/^#[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9_]{2,50}$/i.test(part)) {
+          const tag = part.slice(1)
+          return (
+            <Link
+              key={`${part}-${index}`}
+              to={`/search?q=${encodeURIComponent(tag)}`}
+              className="text-sp-cyan no-underline hover:underline"
+            >
+              {part}
+            </Link>
+          )
+        }
+        return <span key={`${index}-${part.slice(0, 8)}`}>{part}</span>
+      })}
+    </p>
+  )
+}
+
 export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
   const { user } = useAuth()
   const toast = useToast()
@@ -72,6 +95,62 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
       toast.info(data.liked ? 'Like registrado' : 'Like quitado')
     } catch (err) {
       const message = apiErrorMessage(err, 'Error al dar like')
+      setError(message)
+      toast.error(message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function toggleSave() {
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = post.saved_by_me
+        ? await api.delete(`/api/posts/${post.id}/save`)
+        : await api.post(`/api/posts/${post.id}/save`)
+      onUpdated({ ...post, saved_by_me: data.saved })
+      toast.info(data.saved ? 'Publicación guardada' : 'Quitada de guardados')
+    } catch (err) {
+      const message = apiErrorMessage(err, 'No se pudo guardar')
+      setError(message)
+      toast.error(message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function sharePost() {
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = await api.post(`/api/posts/${post.id}/share`)
+      onUpdated({ ...post, shares_count: data.shares_count })
+      const url = `${window.location.origin}/feed`
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url)
+      }
+      toast.success('Compartido · enlace copiado')
+    } catch (err) {
+      const message = apiErrorMessage(err, 'No se pudo compartir')
+      setError(message)
+      toast.error(message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function reportPost() {
+    const reason = window.prompt('Motivo del reporte (mín. 3 caracteres)')
+    if (!reason || reason.trim().length < 3) return
+    setBusy(true)
+    setError('')
+    try {
+      await api.post(`/api/posts/${post.id}/report`, { reason: reason.trim() })
+      onUpdated({ ...post, reported_by_me: true })
+      toast.info('Reporte enviado')
+    } catch (err) {
+      const message = apiErrorMessage(err, 'No se pudo reportar')
       setError(message)
       toast.error(message)
     } finally {
@@ -214,7 +293,7 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
           </div>
         </div>
       ) : (
-        <p className="text-sp-ink whitespace-pre-wrap mb-3 font-body">{post.content}</p>
+        <PostContent content={post.content} />
       )}
 
       {showImage && !isEditing && (
@@ -286,6 +365,38 @@ export default function PostCard({ post, index = 0, onUpdated, onDeleted }) {
           <span className="font-mono text-xs">{post.comments_count}</span>
           <span className="sp-meta !normal-case tracking-normal">Comentarios</span>
         </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={toggleSave}
+          className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition duration-200
+            ${post.saved_by_me ? 'text-sp-yellow' : 'text-sp-ink-muted hover:text-sp-yellow'}`}
+        >
+          <span className="sp-meta !normal-case tracking-normal">
+            {post.saved_by_me ? 'Guardado' : 'Guardar'}
+          </span>
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={sharePost}
+          className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-sp-ink-muted hover:text-sp-cyan transition duration-200"
+        >
+          <span className="font-mono text-xs">{post.shares_count || 0}</span>
+          <span className="sp-meta !normal-case tracking-normal">Compartir</span>
+        </button>
+        {!isOwner && (
+          <button
+            type="button"
+            disabled={busy || post.reported_by_me}
+            onClick={reportPost}
+            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-sp-ink-muted hover:text-sp-pink transition duration-200"
+          >
+            <span className="sp-meta !normal-case tracking-normal">
+              {post.reported_by_me ? 'Reportado' : 'Reportar'}
+            </span>
+          </button>
+        )}
       </div>
       
       {error && <p className="sp-error-text mt-2">{error}</p>}

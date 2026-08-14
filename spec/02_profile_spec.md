@@ -1,38 +1,42 @@
 # Profile Spec
 
 ## Objetivo
-Visualizar y gestionar la información pública de los usuarios registrados.
+Visualizar y gestionar el perfil académico/público de los usuarios.
 
 ## Estado actual
-Implementado. Ruta de backend (`/api/users/{id}`) y vista de frontend.
+Implementado (MVP + Fase 2 plan plataforma).
+
+- `GET /api/users/{id}` — bio, avatar, cover, career, university, semester, counts, `is_following`
+- `PATCH /api/auth/me` — bio + campos académicos
+- `POST /api/auth/me/avatar` · `POST /api/auth/me/cover`
+- `GET /api/users/{id}/followers` · `GET /api/users/{id}/following`
+- UI: portada, editar perfil, tabs Seguidores/Siguiendo, posts con `author_id`
 
 ## Alcance
-- Visualización de datos de perfil (username, avatar, bio).
-- Listado de posts del usuario.
+- Datos de perfil (username, avatar, cover, bio, carrera, universidad, semestre).
+- Contadores y listas follow.
+- Posts del usuario (`GET /api/posts?author_id=`).
 
 ## Fuera de alcance
-- Edición de perfil compleja.
-- Privacidad granular de cuenta.
+- Reset password / verify email (siguiente en Fase 2).
+- Privacidad granular.
 
 ## Archivos involucrados
-- `backend/app/routers/users.py`
-- `frontend/src/pages/Profile.jsx` (o similar)
-
-## Pasos
-1. Obtener ID del usuario desde la ruta.
-2. Consultar detalles del usuario en base de datos.
-3. Renderizar vista de perfil en frontend.
+- `backend/app/api/users.py`
+- `backend/app/api/auth.py`
+- `backend/app/api/follows.py`
+- `frontend/src/pages/Profile.jsx`
+- `backend/tests/test_profile.py`, `test_follows.py`
 
 ## Criterios de aceptación
-- El perfil muestra información correcta del usuario.
-- Si el usuario no existe, devuelve error 404.
+- [x] Perfil muestra datos correctos; 404 si no existe.
+- [x] Propietario edita bio y datos académicos.
+- [x] Listas seguidores y siguiendo.
+- [x] No se expone `password_hash` en respuestas públicas.
 
 ## Testing
-- Validar que `/api/users/{id}` retorna 200 con datos válidos o 404 si es inválido.
+- `pytest tests/test_profile.py tests/test_follows.py`
 
 ## Seguridad
-- Proteger información sensible (no enviar password_hash ni email si no corresponde).
-- Validar permisos de visualización.
-
-## Riesgos
-- Exposición accidental de datos privados del usuario.
+- JWT en rutas de perfil.
+- `UserPublic` / `UserProfile` sin hash ni secretos.

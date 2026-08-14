@@ -11,7 +11,10 @@
 | 4 | meilynperea2-debug | Dashboard actividad | `feature/dashboard-actividad` |
 | 5 | Adrian Arboleda | UX / toasts + docs | `feature/notificaciones-ui` |
 
-**Estado Sprint 1:** completado en código (follow + lista de seguidores, editar/borrar posts, búsqueda, dashboard con actividad reciente, toasts y centro de avisos con badge).
+**Estado Sprint 1:** completado…  
+
+**Flujo Spec-as-Source (obligatorio en fases siguientes):**  
+`spec/00_project_spec.md` → spec del dominio (`spec/XX_*.md`) → skill (`skill/validate_*.md` / `project_orchestrator.md`) → implementación → `skill/run_tests.md` → `skill/security_review.md` → criterios de aceptación.
 
 ---
 

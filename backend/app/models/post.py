@@ -13,6 +13,9 @@ class Post(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    community_id: Mapped[int | None] = mapped_column(
+        ForeignKey("communities.id"), nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -20,8 +23,13 @@ class Post(Base):
     )
 
     author = relationship("User", back_populates="posts")
+    community = relationship("Community", back_populates="posts")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
+    saves = relationship("PostSave", back_populates="post", cascade="all, delete-orphan")
+    hashtag_links = relationship("PostHashtag", back_populates="post", cascade="all, delete-orphan")
+    shares = relationship("PostShare", back_populates="post", cascade="all, delete-orphan")
+    reports = relationship("PostReport", back_populates="post", cascade="all, delete-orphan")
 
 
 class Like(Base):
